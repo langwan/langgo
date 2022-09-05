@@ -1,11 +1,21 @@
 package jwt
 
-import (
-	"runtime"
-	"testing"
-)
+import "testing"
 
-func TestGetFilename(t *testing.T) {
-	_, filename, _, _ := runtime.Caller(0)
-	t.Logf("Current test filename: %s", filename)
+func TestSign(t *testing.T) {
+	instance = &Instance{Secret: "123456"}
+	payload := struct {
+		Name string
+	}{Name: "langwan"}
+	sign, err := Sign(payload)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	err = Verify(sign)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(sign)
 }

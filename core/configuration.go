@@ -1,4 +1,4 @@
-package langgo
+package core
 
 import (
 	"errors"
@@ -32,6 +32,6 @@ func GetComponentConfiguration(name string, conf interface{}) error {
 		}
 		return nil
 	} else {
-		return errors.New("component configuration not find")
+		return errors.New("Component configuration not find")
 	}
 }

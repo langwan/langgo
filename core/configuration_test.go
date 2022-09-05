@@ -1,15 +1,15 @@
-package langgo
+package core
 
 import "testing"
 
 func TestLoadConfigurationFile(t *testing.T) {
-	err := LoadConfigurationFile("./testdata/configuration_test.app.yml")
+	err := LoadConfigurationFile("../testdata/configuration_test.app.yml")
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if conf, ok := componentConfiguration["test"]; ok {
-		if name, ok := conf.(map[string]interface{})["name"]; ok {
+	if conf, ok := componentConfiguration["jwt"]; ok {
+		if name, ok := conf.(map[string]interface{})["Secret"]; ok {
 			if name.(string) != "langgo" {
 				t.Fatal("conf name error")
 			}
@@ -22,20 +22,20 @@ func TestLoadConfigurationFile(t *testing.T) {
 }
 
 func TestGetComponentConfiguration(t *testing.T) {
-	err := LoadConfigurationFile("./testdata/configuration_test.app.yml")
+	err := LoadConfigurationFile("../testdata/configuration_test.app.yml")
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	conf := struct {
-		Name  string `yaml:"name"`
-		Level int    `yaml:"level"`
+		Secret string `yaml:"secret"`
+		Level  int    `yaml:"level"`
 	}{Level: 1}
-	err = GetComponentConfiguration("test", &conf)
+	err = GetComponentConfiguration("jwt", &conf)
 	if err != nil {
 		t.Error(err)
 	} else {
-		if conf.Name == "langgo" && conf.Level == 1 {
+		if conf.Secret == "123456" && conf.Level == 1 {
 
 		} else {
 			t.Fatal("name error")

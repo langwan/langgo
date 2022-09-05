@@ -20,7 +20,7 @@ var instance *Instance
 func (i *Instance) Load() {
 	instance = i
 	core.GetComponentConfiguration("jwt", i)
-	fmt.Printf("jwt %v", i)
+
 }
 
 func (i *Instance) GetName() string {

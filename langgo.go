@@ -8,23 +8,27 @@ import (
 )
 
 func Init() {
-	env := os.Getenv("LANGGO_ENV")
-	if env == "" {
-		env = "development"
-	}
-	workerDir := os.Getenv("langgo_worker_dir")
-	if workerDir == "" {
-		workerDir, _ = os.Getwd()
-		os.Setenv("langgo_worker_dir", workerDir)
+	core.EnvName = os.Getenv("langgo_env")
+
+	if core.EnvName == "" {
+		core.EnvName = "development"
 	}
 
-	err := godotenv.Load(path.Join(workerDir, ".env."+env+".yml"))
+	core.WorkerDir = os.Getenv("langgo_worker_dir")
+
+	if core.WorkerDir == "" {
+		core.WorkerDir, _ = os.Getwd()
+		os.Setenv("langgo_worker_dir", core.WorkerDir)
+	}
+
+	err := godotenv.Load(path.Join(core.WorkerDir, ".env."+core.EnvName+".yml"))
 	if err != nil {
 		panic(err)
 	}
+
 	confName := os.Getenv("langgo_configuration_name")
 
-	confPath := path.Join(workerDir, confName+".yml")
+	confPath := path.Join(core.WorkerDir, confName+".yml")
 	err = core.LoadConfigurationFile(confPath)
 	if err != nil {
 		panic(err)

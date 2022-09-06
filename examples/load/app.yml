@@ -1,2 +1,4 @@
 jwt:
   secret: "123456"
+log:
+  reopen_signal: 31

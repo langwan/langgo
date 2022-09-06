@@ -2,6 +2,7 @@ package langgo
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/langwan/langgo/components/log"
 	"github.com/langwan/langgo/core"
 	"os"
 	"path"
@@ -33,9 +34,14 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
+	core.AddComponents(&log.Instance{})
 }
 
 func init() {
 	Init()
 
+}
+
+func Run() {
+	core.SignalNotify()
 }

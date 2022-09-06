@@ -11,7 +11,7 @@ func Init() {
 	core.EnvName = os.Getenv("langgo_env")
 
 	if core.EnvName == "" {
-		core.EnvName = "development"
+		core.EnvName = core.Development
 	}
 
 	core.WorkerDir = os.Getenv("langgo_worker_dir")

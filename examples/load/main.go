@@ -5,8 +5,8 @@ import (
 	"github.com/langwan/langgo"
 	_ "github.com/langwan/langgo"
 	"github.com/langwan/langgo/components/jwt"
-	"github.com/langwan/langgo/components/log"
 	"github.com/langwan/langgo/core"
+	"github.com/langwan/langgo/core/log"
 	"syscall"
 )
 

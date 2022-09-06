@@ -1,7 +1,7 @@
 package core
 
 type Component interface {
-	Load()
+	Load() error
 	GetName() string
 }
 

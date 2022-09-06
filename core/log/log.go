@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"syscall"
+	"time"
 )
 
 type Instance struct {
@@ -62,7 +63,7 @@ func Logger(name string, tag string) *zerolog.Logger {
 			log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)
 		}
 		if core.EnvName == core.Development {
-			mf := sysio.MultiWriter(os.Stdout, rf)
+			mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339, NoColor: false}, zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true})
 			loggers[name] = item{
 				logger: zerolog.New(mf),
 				writer: rf,

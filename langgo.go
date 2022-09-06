@@ -2,8 +2,8 @@ package langgo
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/langwan/langgo/components/log"
 	"github.com/langwan/langgo/core"
+	"github.com/langwan/langgo/core/log"
 	"os"
 	"path"
 )
@@ -34,7 +34,8 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-	core.AddComponents(&log.Instance{})
+	l := log.Instance{}
+	l.Load()
 }
 
 func init() {

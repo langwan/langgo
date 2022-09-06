@@ -15,16 +15,18 @@ type Instance struct {
 	Secret string `yaml:"secret"`
 }
 
+const name = "jwt"
+
 var instance *Instance
 
 func (i *Instance) Load() {
 	instance = i
-	core.GetComponentConfiguration("jwt", i)
+	core.GetComponentConfiguration(name, i)
 
 }
 
 func (i *Instance) GetName() string {
-	return "jwt"
+	return name
 }
 
 type header struct {

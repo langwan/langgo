@@ -1,6 +1,6 @@
 # Langgo Framework
 
-Langgo是一款go语言开发应用的框架。在B站以视频的形式同步开发。
+Langgo是一款go语言开发应用的框架。在B站以视频的形式同步开发。视频地址：https://space.bilibili.com/401571418
 
 ## 内容
 

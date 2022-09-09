@@ -16,7 +16,6 @@ func main() {
 	err = jwt.Verify(sign)
 	if err != nil {
 		panic(err)
-
 	}
 	log.Logger("app", "jwt").Info().Msg("ok")
 }

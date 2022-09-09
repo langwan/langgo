@@ -54,10 +54,6 @@ func (i *Instance) GetName() string {
 }
 
 func Logger(name string, tag string) *zerolog.Logger {
-	if len(loggers) == 0 {
-		l := zerolog.New(os.Stdout)
-		return &l
-	}
 	rp := path.Join(core.WorkerDir, "logs")
 	io.CreateFolder(rp, true)
 	if _, ok := loggers[name]; !ok {
@@ -67,14 +63,16 @@ func Logger(name string, tag string) *zerolog.Logger {
 			log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)
 		}
 		if core.EnvName == core.Development {
-			mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339, NoColor: false}, zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true})
+			mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true})
+			l := zerolog.New(mf).With().Str("name", name).Timestamp().Logger()
 			loggers[name] = item{
-				logger: zerolog.New(mf),
+				logger: l,
 				writer: rf,
 			}
 		} else {
+			l := zerolog.New(rf).With().Str("name", name).Timestamp().Logger()
 			loggers[name] = item{
-				logger: zerolog.New(rf),
+				logger: l,
 				writer: rf,
 			}
 		}

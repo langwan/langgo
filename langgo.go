@@ -28,7 +28,6 @@ func Init() {
 		panic(err)
 	}
 	l := log.Instance{}
-	l.Load()
 	confName := os.Getenv("langgo_configuration_name")
 
 	confPath := path.Join(core.WorkerDir, confName+".yml")
@@ -39,6 +38,7 @@ func Init() {
 		}
 	}
 
+	l.Load()
 }
 
 //func init() {

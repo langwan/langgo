@@ -54,6 +54,10 @@ func (i *Instance) GetName() string {
 }
 
 func Logger(name string, tag string) *zerolog.Logger {
+	if len(loggers) == 0 {
+		l := zerolog.New(os.Stdout)
+		return &l
+	}
 	rp := path.Join(core.WorkerDir, "logs")
 	io.CreateFolder(rp, true)
 	if _, ok := loggers[name]; !ok {

@@ -14,8 +14,9 @@ func Init() {
 	if core.EnvName == "" {
 		core.EnvName = core.Development
 	}
-
-	core.WorkerDir = os.Getenv("langgo_worker_dir")
+	if core.WorkerDir == "" {
+		core.WorkerDir = os.Getenv("langgo_worker_dir")
+	}
 
 	if core.WorkerDir == "" {
 		core.WorkerDir, _ = os.Getwd()
@@ -26,23 +27,28 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-
+	l := log.Instance{}
+	l.Load()
 	confName := os.Getenv("langgo_configuration_name")
 
 	confPath := path.Join(core.WorkerDir, confName+".yml")
 	err = core.LoadConfigurationFile(confPath)
 	if err != nil {
-		panic(err)
+		if core.EnvName == core.Development {
+			log.Logger("langgo", "init").Warn().Msg("load app config failed.")
+		}
 	}
-	l := log.Instance{}
-	l.Load()
+
 }
 
-func init() {
+//func init() {
+//	Init()
+//
+//}
+
+func Run(instances ...core.Component) {
 	Init()
-
-}
-
-func Run() {
+	core.AddComponents(instances...)
+	core.LoadComponents()
 	core.SignalNotify()
 }

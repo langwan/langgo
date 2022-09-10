@@ -64,13 +64,14 @@ func Logger(name string, tag string) *zerolog.Logger {
 		}
 		if core.EnvName == core.Development {
 			mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true})
-			l := zerolog.New(mf).With().Str("name", name).Timestamp().Logger()
+			l := zerolog.New(mf).With().Str("tag", tag).Timestamp().Logger()
 			loggers[name] = item{
 				logger: l,
 				writer: rf,
 			}
 		} else {
-			l := zerolog.New(rf).With().Str("name", name).Timestamp().Logger()
+			zc := zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true}
+			l := zerolog.New(zc).With().Str("tag", tag).Timestamp().Logger()
 			loggers[name] = item{
 				logger: l,
 				writer: rf,

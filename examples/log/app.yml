@@ -1,0 +1,4 @@
+hello:
+  message: "hi, dev"
+log:
+  reopen_signal: 31

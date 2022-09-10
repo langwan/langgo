@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/langwan/langgo/core"
 	"github.com/langwan/langgo/core/log"
+	"github.com/langwan/langgo/helpers/io"
 	"os"
 	"path"
 )
@@ -22,20 +23,27 @@ func Init() {
 		core.WorkerDir, _ = os.Getwd()
 		os.Setenv("langgo_worker_dir", core.WorkerDir)
 	}
+	envPath := path.Join(core.WorkerDir, ".env."+core.EnvName+".yml")
+	confName := "app"
 
-	err := godotenv.Load(path.Join(core.WorkerDir, ".env."+core.EnvName+".yml"))
-	if err != nil {
-		panic(err)
+	if io.FileExists(envPath) {
+		err := godotenv.Load(envPath)
+		if err != nil {
+			log.Logger("langgo", "run").Warn().Err(err).Msg("load env file")
+		}
+		confName = os.Getenv("langgo_configuration_name")
+	} else {
+		log.Logger("langgo", "run").Warn().Msg("env file not find")
 	}
+
 	l := log.Instance{}
-	confName := os.Getenv("langgo_configuration_name")
 
 	confPath := path.Join(core.WorkerDir, confName+".yml")
-	err = core.LoadConfigurationFile(confPath)
+	err := core.LoadConfigurationFile(confPath)
 	if err != nil {
-		if core.EnvName == core.Development {
-			log.Logger("langgo", "init").Warn().Msg("load app config failed.")
-		}
+
+		log.Logger("langgo", "run").Warn().Str("path", confPath).Msg("load app config failed.")
+
 	}
 
 	l.Load()

@@ -5,4 +5,5 @@ var EnvName string
 
 const (
 	Development = "development"
+	Production  = "production"
 )

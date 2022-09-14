@@ -30,6 +30,7 @@ type item struct {
 var loggers = make(map[string]item)
 
 func (i *Instance) Load() {
+
 	instance = i
 	core.GetComponentConfiguration(name, i)
 	if core.EnvName == core.Development {

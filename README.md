@@ -26,10 +26,14 @@ import "github.com/langwan/langgo"
 ```
 package main
 
-import "github.com/langwan/langgo"
+import (
+	"github.com/langwan/langgo"
+	"github.com/langwan/langgo/components/hello"
+	"github.com/langwan/langgo/core/log"
+)
 
 func main() {
-    langgo.Init()
-    langgo.Run()
+	langgo.Run(&hello.Instance{Message: "hello component"})
+	log.Logger("component", "hello").Info().Msg(hello.GetInstance().Message)
 }
 ```

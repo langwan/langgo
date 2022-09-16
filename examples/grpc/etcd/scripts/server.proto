@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = ".;rpc";
+option go_package = ".;pb";
 
 message HelloResponse {
   string msg = 1;
@@ -21,7 +21,6 @@ message SignInResponse {
 
 service Server {
   rpc Hello(Empty) returns(HelloResponse);
-  rpc Login(SignInRequest) returns(SignInResponse);
 }
 
 service Account {

@@ -1,4 +1,4 @@
-package coreGrpc
+package rpc
 
 import (
 	"context"

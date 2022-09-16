@@ -3,3 +3,4 @@ core/log/logs
 examples/load/logs
 examples/log/logs
 logs
+*.pb.go

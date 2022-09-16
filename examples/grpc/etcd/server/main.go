@@ -6,7 +6,6 @@ import (
 	"github.com/langwan/langgo"
 	"github.com/langwan/langgo/core"
 	rpc "github.com/langwan/langgo/core/grpc"
-	"google.golang.org/grpc"
 	"os"
 	cs "server/components/server"
 	"server/pb"
@@ -33,7 +32,7 @@ func main() {
 		core.DeferRun()
 	}()
 	rpc.EtcdRegister(cs.GetInstance().EtcdHost, cs.GetInstance().ServiceName, addr, 50)
-	cg := rpc.New(grpc.MaxSendMsgSize(1024*1024*10), grpc.MaxRecvMsgSize(1024*1024*10))
+	cg := rpc.New()
 	cg.Use(rpc.LogUnaryServerInterceptor())
 	pb.RegisterServerServer(cg.Server(), server.Server{})
 	cg.Run(addr)

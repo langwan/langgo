@@ -1,5 +1,3 @@
-jwt:
-  secret: "123456"
 mysql:
   main:
     conn_max_lifetime: 1h

@@ -9,6 +9,8 @@ import (
 
 const addr = "localhost:8000"
 
+// gin.new rpc.new
+// gin.new gin.use gin.post(.) gin.run(addr)
 func main() {
 	langgo.Run()
 	cg := rpc.New()

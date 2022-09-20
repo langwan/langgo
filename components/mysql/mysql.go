@@ -34,16 +34,18 @@ func (i *Instance) Load() error {
 	items := make(map[string]item)
 
 	core.GetComponentConfiguration(name, &items)
-	
+
 	for k, c := range items {
 		conn, err := gorm.Open(gormMysql.Open(c.Dsn), &gorm.Config{Logger: NewWithLogger(*log.Logger("mysql", "info")), SkipDefaultTransaction: true})
 		if err != nil {
-			return err
+			log.Logger("component", "mysql").Warn().Err(err).Send()
+			continue
 		}
 
 		sqlDB, err := conn.DB()
 		if err != nil {
-			return err
+			log.Logger("component", "mysql").Warn().Err(err).Send()
+			continue
 		}
 
 		sqlDB.SetMaxIdleConns(c.MaxOpenConns)
@@ -57,15 +59,6 @@ func (i *Instance) Load() error {
 
 func Get() *gorm.DB {
 	conn, ok := connections["main"]
-	if ok {
-		return conn
-	} else {
-		return nil
-	}
-}
-
-func GetDb(name string) *gorm.DB {
-	conn, ok := connections[name]
 	if ok {
 		return conn
 	} else {

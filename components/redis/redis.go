@@ -39,7 +39,10 @@ func (i *Instance) Load() error {
 	return nil
 }
 
-func Get() *redis.Client {
+func Main() *redis.Client {
+	return Get("main")
+}
+func Get(name string) *redis.Client {
 	conn, ok := connections["main"]
 	if ok {
 		return conn

@@ -8,15 +8,15 @@ import (
 
 func main() {
 	langgo.Run(&mysql.Instance{})
-	mysql.Get().AutoMigrate(&Account{})
+	mysql.Main().AutoMigrate(&Account{})
 	acc := Account{
 		Name: "chihuo",
 	}
-	mysql.Get().Create(&acc)
+	mysql.Main().Create(&acc)
 	acc.Name = "famingjia"
-	mysql.Get().Save(&acc)
+	mysql.Main().Save(&acc)
 	newAcc := Account{}
-	mysql.Get().First(&newAcc, "id=?", acc.ID)
+	mysql.Main().First(&newAcc, "id=?", acc.ID)
 	log.Logger("app", "main").Info().Interface("newAcc", newAcc).Send()
-	mysql.Get().Unscoped().Delete(&Account{}, newAcc.ID)
+	mysql.Main().Unscoped().Delete(&Account{}, newAcc.ID)
 }

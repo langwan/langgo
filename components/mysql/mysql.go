@@ -57,8 +57,11 @@ func (i *Instance) Load() error {
 	return nil
 }
 
-func Get() *gorm.DB {
-	conn, ok := connections["main"]
+func Main() *gorm.DB {
+	return Get("main")
+}
+func Get(name string) *gorm.DB {
+	conn, ok := connections[name]
 	if ok {
 		return conn
 	} else {

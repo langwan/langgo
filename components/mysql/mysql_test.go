@@ -14,7 +14,7 @@ func Test_Mysql(t *testing.T) {
 	i := Instance{}
 	i.Load()
 	var one int
-	res := Get().Debug().Select(" 1").Scan(&one)
+	res := Main().Debug().Select(" 1").Scan(&one)
 	if res.RowsAffected > 0 {
 		t.Log(one)
 	}

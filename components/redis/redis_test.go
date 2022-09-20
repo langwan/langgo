@@ -15,8 +15,8 @@ func TestRedis(t *testing.T) {
 	i := Instance{}
 	i.Load()
 
-	cmd := Get().Set("name", "chihuo", 10*time.Second)
+	cmd := Main().Set("name", "chihuo", 10*time.Second)
 	log.Logger("test", "redis").Debug().Interface("cmd", cmd).Send()
-	str, err := Get().Get("name").Result()
+	str, err := Main().Get("name").Result()
 	log.Logger("test", "redis").Debug().Str("str", str).Err(err).Send()
 }

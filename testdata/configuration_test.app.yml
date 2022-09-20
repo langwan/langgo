@@ -6,3 +6,6 @@ mysql:
     dsn: root:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local
     max_idle_conns: 1
     max_open_conns: 10
+redis:
+  main:
+    dsn: redis://default:redispw@localhost:55000/0

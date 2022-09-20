@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestInstance_Load(t *testing.T) {
+func Test_Mysql(t *testing.T) {
 	core.EnvName = core.Development
 	core.LoadConfigurationFile("../../testdata/configuration_test.app.yml")
 	l := log.Instance{}

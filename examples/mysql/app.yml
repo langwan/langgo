@@ -1,6 +1,11 @@
 mysql:
   main:
-    conn_max_lifetime: 1h
     dsn: root:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local
+    conn_max_lifetime: 1h
+    max_idle_conns: 1
+    max_open_conns: 10
+  order:
+    dsn: order:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local
+    conn_max_lifetime: 1h
     max_idle_conns: 1
     max_open_conns: 10

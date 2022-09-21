@@ -4,3 +4,4 @@ examples/load/logs
 examples/log/logs
 logs
 *.pb.go
+sourcetreeconfig

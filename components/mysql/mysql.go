@@ -48,7 +48,7 @@ func (i *Instance) Load() error {
 			continue
 		}
 
-		sqlDB.SetMaxIdleConns(c.MaxOpenConns)
+		sqlDB.SetMaxIdleConns(c.MaxIdleConns)
 		sqlDB.SetMaxOpenConns(c.MaxOpenConns)
 		sqlDB.SetConnMaxLifetime(c.ConnMaxLifetime)
 

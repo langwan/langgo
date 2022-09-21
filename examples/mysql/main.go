@@ -3,12 +3,15 @@ package main
 import (
 	"github.com/langwan/langgo"
 	"github.com/langwan/langgo/components/mysql"
+	"github.com/langwan/langgo/core"
 	"github.com/langwan/langgo/core/log"
 )
 
 func main() {
 	langgo.Run(&mysql.Instance{})
-	mysql.Main().AutoMigrate(&Account{})
+	if core.EnvName == core.Development {
+		mysql.Main().AutoMigrate(&Account{})
+	}
 	acc := Account{
 		Name: "chihuo",
 	}

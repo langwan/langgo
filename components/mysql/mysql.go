@@ -5,6 +5,7 @@ import (
 	"github.com/langwan/langgo/core/log"
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 	"time"
 )
 
@@ -13,10 +14,14 @@ const name = "mysql"
 var instance *Instance
 
 type item struct {
-	Dsn             string        `yaml:"dsn"`
-	MaxIdleConns    int           `yaml:"max_idle_conns"`
-	MaxOpenConns    int           `yaml:"max_open_conns"`
-	ConnMaxLifetime time.Duration `yaml:"conn_max_lifetime"`
+	Dsn                       string              `yaml:"dsn"`
+	MaxIdleConns              int                 `yaml:"max_idle_conns"`
+	MaxOpenConns              int                 `yaml:"max_open_conns"`
+	ConnMaxLifetime           time.Duration       `yaml:"conn_max_lifetime"`
+	SlowThreshold             time.Duration       `yaml:"slow_threshold"`
+	Colorful                  bool                `yaml:"colorful"`
+	IgnoreRecordNotFoundError bool                `yaml:"ignore_record_not_found_error"`
+	LogLevel                  gormlogger.LogLevel `yaml:"log_level"`
 }
 
 var connections = make(map[string]*gorm.DB)
@@ -36,7 +41,16 @@ func (i *Instance) Load() error {
 	core.GetComponentConfiguration(name, &items)
 
 	for k, c := range items {
-		conn, err := gorm.Open(gormMysql.Open(c.Dsn), &gorm.Config{Logger: NewWithLogger(*log.Logger("mysql", "info")), SkipDefaultTransaction: true})
+		zl := log.Logger("mysql", k)
+
+		l := New(*zl, gormlogger.Config{
+			SlowThreshold:             c.SlowThreshold,
+			Colorful:                  c.Colorful,
+			IgnoreRecordNotFoundError: c.IgnoreRecordNotFoundError,
+			LogLevel:                  c.LogLevel,
+		})
+
+		conn, err := gorm.Open(gormMysql.Open(c.Dsn), &gorm.Config{Logger: l, SkipDefaultTransaction: true})
 		if err != nil {
 			log.Logger("component", "mysql").Warn().Err(err).Send()
 			continue

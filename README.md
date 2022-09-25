@@ -9,6 +9,7 @@ Langgo是一款go语言开发应用的框架。在B站以视频的形式同步�
  - [开发视频](#开发视频)
  - [grpc](#grpc)
  - [mysql](#mysql)
+ - [自定义组件](#自定义组件)
 ## 安装
 
 基于go 1.19开发
@@ -81,3 +82,19 @@ fmt.Println(one)
 
 `mysql.Main()` 表示获取配置中`main`下的mysql配置，如果想获取`order`，需要使用 `mysql.Get("order")`
 
+
+## 自定义组件
+
+完全可以在自己的项目中实现自定义组件与使用`langgo`框架中的内置组件的方式一样，只需要您在自己的项目里拷贝出`hello`组件的代码，进行改造，然后在启动的时候放在`langgo.Run`里一起启动就可以了：
+
+```go
+langgo.Run(&my.Instance{})
+```
+
+组件的配置文件放在`app.yml`配置中就可以了，例如：
+```yaml
+my:
+  message: my name is langgo
+```
+
+可以参考 examples/component/custom 这个例子

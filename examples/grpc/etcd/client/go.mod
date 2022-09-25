@@ -2,7 +2,10 @@ module client
 
 go 1.19
 
+replace github.com/langwan/langgo => ../../../../
+
 require (
+	github.com/langwan/langgo v0.0.0-00010101000000-000000000000
 	go.etcd.io/etcd/client/v3 v3.5.5
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
@@ -13,6 +16,9 @@ require (
 	github.com/coreos/go-systemd/v22 v22.4.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/rs/zerolog v1.28.0 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.5 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
@@ -22,4 +28,5 @@ require (
 	golang.org/x/sys v0.0.0-20220915200043-7b5979e65e41 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220915135415-7fd63a7952de // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

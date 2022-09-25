@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/langwan/langgo"
 	"github.com/langwan/langgo/core"
-	rpc "github.com/langwan/langgo/core/grpc"
+	"github.com/langwan/langgo/core/rpc"
 	"os"
 	cs "server/components/server"
 	"server/pb"
@@ -32,8 +32,15 @@ func main() {
 		core.DeferRun()
 	}()
 	rpc.EtcdRegister(cs.GetInstance().EtcdHost, cs.GetInstance().ServiceName, addr, 50)
-	cg := rpc.New()
+	cg := rpc.NewServer(nil)
 	cg.Use(rpc.LogUnaryServerInterceptor())
-	pb.RegisterServerServer(cg.Server(), server.Server{})
-	cg.Run(addr)
+	gs, err := cg.Server()
+	if err != nil {
+		panic(err)
+	}
+	pb.RegisterServerServer(gs, server.Server{})
+	err = cg.Run(addr)
+	if err != nil {
+		panic(err)
+	}
 }

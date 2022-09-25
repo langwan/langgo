@@ -5,17 +5,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/langwan/langgo/core/rpc"
-	"google.golang.org/grpc"
 	"log"
 )
 
+const addr = "localhost:8000"
+
 func main() {
 
-	conn, err := rpc.NewClient(nil, "127.0.0.1:8000", grpc.WithInsecure())
-
+	conn, err := rpc.NewClient(&rpc.Tls{
+		Crt:   "../keys/client.crt",
+		Key:   "../keys/client.key",
+		CACrt: "../keys/ca.crt",
+	}, addr)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		return
+		panic(err)
 	}
 
 	ServerClient := pb.NewServerClient(conn)

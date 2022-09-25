@@ -4,6 +4,7 @@ import (
 	"client/pb"
 	"context"
 	"fmt"
+	"github.com/langwan/langgo/core/rpc"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/naming/resolver"
 	"google.golang.org/grpc"
@@ -17,17 +18,17 @@ const etcdHost = "http://localhost:2379"
 const serviceName = "langgo/server"
 
 func main() {
+
 	etcdClient, err := clientv3.NewFromURL(etcdHost)
 	if err != nil {
 		panic(err)
 	}
 	etcdResolver, err := resolver.NewBuilder(etcdClient)
 
-	conn, err := grpc.Dial(fmt.Sprintf("etcd:///%s", serviceName), grpc.WithResolvers(etcdResolver), grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, roundrobin.Name)))
-
+	conn, err := rpc.NewClient(nil, fmt.Sprintf("etcd:///%s", serviceName), grpc.WithResolvers(etcdResolver), grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, roundrobin.Name)))
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		return
+		panic(err)
+
 	}
 
 	ServerClient := pb.NewServerClient(conn)

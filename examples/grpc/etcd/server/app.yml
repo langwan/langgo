@@ -2,4 +2,4 @@ jwt:
   secret: "123456"
 server:
   etcd_host: "localhost:2379"
-  service_name: "langgo/server"
+  service_name: "langgo/grpcServer"

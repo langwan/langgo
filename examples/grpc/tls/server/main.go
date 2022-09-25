@@ -13,15 +13,16 @@ const addr = "localhost:8000"
 // gin.new gin.use gin.post(.) gin.run(addr)
 func main() {
 	langgo.Run()
-	cg := rpc.NewServer(nil)
+	cg := rpc.NewServer(&rpc.Tls{
+		Crt:   "../keys/server.crt",
+		Key:   "../keys/server.key",
+		CACrt: "../keys/ca.crt",
+	})
 	cg.Use(rpc.LogUnaryServerInterceptor())
 	gs, err := cg.Server()
 	if err != nil {
 		panic(err)
 	}
 	pb.RegisterServerServer(gs, server.Server{})
-	err = cg.Run(addr)
-	if err != nil {
-		panic(err)
-	}
+	cg.Run(addr)
 }

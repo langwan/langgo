@@ -1,2 +1,2 @@
 hello:
-  message: "hi, server"
+  message: "hi, grpcServer"

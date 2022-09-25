@@ -2,8 +2,13 @@ package rpc
 
 import (
 	"context"
+	ctls "crypto/tls"
+	"crypto/x509"
+	"errors"
 	"github.com/langwan/langgo/core/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"net"
 	"runtime/debug"
 	"time"
@@ -14,28 +19,90 @@ type Server struct {
 	opt        []grpc.ServerOption
 	middleware []grpc.UnaryServerInterceptor
 	server     *grpc.Server
+	tls        *Tls
+}
+
+type Tls struct {
+	Crt   string
+	Key   string
+	CACrt string
 }
 
 func (s *Server) Use(middleware ...grpc.UnaryServerInterceptor) {
 	s.middleware = append(s.middleware, middleware...)
 }
 
-func New(opt ...grpc.ServerOption) *Server {
+func NewClient(tls *Tls, addr string, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
+	if tls != nil {
+		certificate, err := ctls.LoadX509KeyPair(tls.Crt, tls.Key)
+		if err != nil {
+			return nil, err
+		}
+
+		certPool := x509.NewCertPool()
+		ca, err := ioutil.ReadFile(tls.CACrt)
+		if err != nil {
+			return nil, err
+		}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			return nil, errors.New("AppendCertsFromPEM is false")
+		}
+
+		creds := credentials.NewTLS(&ctls.Config{
+			Certificates:       []ctls.Certificate{certificate},
+			RootCAs:            certPool,
+			InsecureSkipVerify: true,
+		})
+
+		opts = append(opts, grpc.WithTransportCredentials(creds))
+	}
+
+	return grpc.Dial(addr, opts...)
+
+}
+
+func NewServer(tls *Tls, opt ...grpc.ServerOption) *Server {
 	s := &Server{
 		opt: opt,
+		tls: tls,
 	}
 	return s
 }
 
-func (s *Server) Server() *grpc.Server {
+func (s *Server) Server() (server *grpc.Server, err error) {
 	if s.server == nil {
 		s.opt = append(s.opt, grpc.UnaryInterceptor(ChainUnaryServer(s.middleware...)))
+		if s.tls != nil {
+
+			certificate, err := ctls.LoadX509KeyPair(s.tls.Crt, s.tls.Key)
+			if err != nil {
+				return nil, err
+			}
+
+			certPool := x509.NewCertPool()
+			ca, err := ioutil.ReadFile(s.tls.CACrt)
+			if err != nil {
+				return nil, err
+			}
+			if ok := certPool.AppendCertsFromPEM(ca); !ok {
+				panic("AppendCertsFromPEM failed")
+			}
+
+			creds := credentials.NewTLS(&ctls.Config{
+				Certificates: []ctls.Certificate{certificate},
+				ClientAuth:   ctls.RequireAndVerifyClientCert,
+				ClientCAs:    certPool,
+			})
+
+			s.opt = append(s.opt, grpc.Creds(creds))
+		}
 		s.server = grpc.NewServer(s.opt...)
 	}
-	return s.server
+	return s.server, nil
 }
 
 func (s *Server) Run(addr string) error {
+
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err

@@ -50,6 +50,12 @@ func main() {
 
 grpc支持单机模式和etcd服务发现两种模式，可以参考examples/grpc/single和examples/grpc/etcd两个例子。
 
+完成特性：
+
+* 支持etcd等服务发现模式
+* 支持tls双向认证
+* 支持链表式多中间件
+
 ## mysql
 
 参考 `examples/mysql`

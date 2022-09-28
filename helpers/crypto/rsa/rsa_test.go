@@ -28,7 +28,7 @@ func TestSign(t *testing.T) {
 	data := "0123456789"
 	pub, err := PublicKeyFromX509PKCS1(spub)
 	assert.NoError(t, err)
-
+	t.Log(spub, spri)
 	pri, err := PrivateKeyFromX509PKCS1(spri)
 	assert.NoError(t, err)
 

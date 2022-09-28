@@ -7,8 +7,14 @@ Langgo是一款go语言开发应用的框架。在B站以视频的形式同步�
  - [安装](#安装)
  - [快速开始](#快速开始)
  - [开发视频](#开发视频)
+ - [组件](#组件)
+   - [mysql](#mysql)
+   - [redis](#redis)
+ - [helper](#helper) 
+ - [rsa](#rsa)
+ - [aes](#aes)
  - [grpc](#grpc)
- - [mysql](#mysql)
+ - 
  - [自定义组件](#自定义组件)
 ## 安装
 
@@ -42,6 +48,11 @@ func main() {
 }
 ```
 
+## 组件
+
+组件有两个特征，需要配置或者需要持久化的实例，例如`mysql`，需要对数据库连接参数进行配置，连接也需要持久化在内存当中，这两种情况下需要制作成组件。`langgo`有一些内置的组件。
+
+
 ## 开发视频
 
 视频地址 https://space.bilibili.com/401571418/channel/collectiondetail?sid=699075
@@ -58,7 +69,7 @@ grpc支持单机模式和etcd服务发现两种模式，可以参考examples/grp
 
 ## mysql
 
-参考 `examples/mysql`
+参考 `examples/mysql`，实际整合了`gorm`
 
 mysql配置支持多个mysql账号，例如：
 
@@ -88,6 +99,9 @@ fmt.Println(one)
 
 `mysql.Main()` 表示获取配置中`main`下的mysql配置，如果想获取`order`，需要使用 `mysql.Get("order")`
 
+## redis
+
+与mysql差不多，可以对redis进行配置并使用多个redis数据源，可以对redis连接池进行配置，实际上整合了`go-reids`
 
 ## 自定义组件
 
@@ -104,3 +118,16 @@ my:
 ```
 
 可以参考 examples/component/custom 这个例子
+
+## helper
+
+无需配置和内存持久化，直接调用的函数集合。
+
+## rsa
+
+支持 加密、解密、创建密钥（根据长度）、签名、校验等方法
+
+## aes 
+
+支持加密、解密等方法
+

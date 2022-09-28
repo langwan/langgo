@@ -43,7 +43,7 @@ func Main() *redis.Client {
 	return Get("main")
 }
 func Get(name string) *redis.Client {
-	conn, ok := connections["main"]
+	conn, ok := connections[name]
 	if ok {
 		return conn
 	} else {

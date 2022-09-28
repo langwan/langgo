@@ -100,3 +100,15 @@ func Verify(token string) (err error) {
 	}
 	return errors.New("verify is invalid")
 }
+
+func GetPayload(token string) ([]byte, error) {
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return nil, errors.New("parts len error")
+	}
+	de, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return nil, err
+	}
+	return de, nil
+}

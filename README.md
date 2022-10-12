@@ -12,6 +12,7 @@ Langgo是一款go语言开发应用的框架。在B站以视频的形式同步�
  - [组件](#组件)
    - [mysql](#mysql)
    - [redis](#redis)
+   - [sqlite](#sqlite)
  - [helper](#helper) 
    - [rsa](#rsa)
    - [aes](#aes)
@@ -91,7 +92,7 @@ grpc支持单机模式和etcd服务发现两种模式，可以参考examples/grp
 
 完成特性：
 
-* 支持etcd等服务发现模式
+* 支持`etcd`等服务发现模式
 * 支持tls双向认证
 * 支持链表式多中间件
 
@@ -99,7 +100,7 @@ grpc支持单机模式和etcd服务发现两种模式，可以参考examples/grp
 
 参考 `examples/mysql`，实际整合了`gorm`
 
-mysql配置支持多个mysql账号，例如：
+mysql配置支持多个`mysql`账号，例如：
 
 ```yaml
 mysql:
@@ -116,7 +117,7 @@ mysql:
 
 ```
 
-这样可以支持项目会拥有多个mysql数据库
+这样可以支持项目会拥有多个`mysql`数据库
 
 ```go
 langgo.Run(&mysql.Instance{})
@@ -129,7 +130,37 @@ fmt.Println(one)
 
 ## redis
 
-与mysql差不多，可以对redis进行配置并使用多个redis数据源，可以对redis连接池进行配置，实际上整合了`go-reids`
+与`mysql`差不多，可以对redis进行配置并使用多个`redis`数据源，可以对`redis`连接池进行配置，实际上整合了`go-reids`
+
+配置方法
+```yaml
+redis:
+  main:
+    dsn: redis://default:redispw@localhost:55000/0
+```
+`dsn`为标准redis配置字符串
+
+
+使用方法
+```go
+langgo.Run(&reids.Instance{})
+cmd := Main().Set("name", "langgo", 10*time.Second)
+str, err := Main().Get("name").Result()
+```
+
+## sqlite
+
+使用`gorm`二次封装，配置方法：
+```yaml
+sqlite:
+  path: "xxx/xxx.db"
+```
+
+调用方法
+```go
+langgo.Run(&sqlite.Instance{})
+sqlite.Get().Create(&Account{})
+```
 
 ## 自定义组件
 

@@ -1,43 +1,38 @@
 package sqlite
 
 import (
-	"fmt"
+	"github.com/langwan/langgo/core"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
 )
 
-const name = "mysql"
-
-var instance *Instance
+const name = "sqlite"
 
 var db *gorm.DB
 
 type Instance struct {
-	Dsn string `yaml:"dsn"`
+	Path string `yaml:"path"`
 }
+
+var instance *Instance
 
 func (i *Instance) GetName() string {
 	return name
 }
 
 func (i *Instance) Load() error {
-	dp := fmt.Sprintf("%s/app.db", dir.GetDefaultDocumentFolderPath())
+	core.GetComponentConfiguration(name, i)
+	return i.load()
+}
 
-	db, err = gorm.Open(sqlite.Open(dp), &gorm.Config{})
+func (i *Instance) load() error {
+	instance = i
+	var err error
+	db, err = gorm.Open(sqlite.Open(i.Path), &gorm.Config{})
 	if err != nil {
-		log.Panicln(err)
-		return
+		return err
 	}
-	db.AutoMigrate(&model2.Download{}, &model2.FileItem{})
 	return nil
-}
-
-func (i Instance) Defer() {
-
-}
-
-func (i Instance) Backend() {
-
 }
 
 func Get() *gorm.DB {

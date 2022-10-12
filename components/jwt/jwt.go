@@ -19,14 +19,14 @@ const name = "jwt"
 
 var instance *Instance
 
+func (i *Instance) GetName() string {
+	return name
+}
+
 func (i *Instance) Load() error {
 	instance = i
 	core.GetComponentConfiguration(name, i)
 	return nil
-}
-
-func (i *Instance) GetName() string {
-	return name
 }
 
 type header struct {

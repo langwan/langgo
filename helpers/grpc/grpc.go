@@ -1,7 +1,13 @@
 package helperGrpc
 
 import (
+	"context"
+	"encoding/json"
+	"errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"reflect"
 )
 
 // from https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/chain.go
@@ -45,4 +51,35 @@ func ChainStreamServer(interceptors ...grpc.StreamServerInterceptor) grpc.Stream
 		}
 		return interceptors[0](srv, stream, info, currHandler)
 	}
+}
+
+func Call(service interface{}, methodName string, request string, header interface{}) (response interface{}, code int, err error) {
+	tp := reflect.TypeOf(service)
+	method, ok := tp.MethodByName(methodName)
+	if !ok {
+		return nil, int(codes.NotFound), status.Errorf(codes.NotFound, "%s not find", methodName)
+	}
+
+	method.Type.NumIn()
+
+	parameter := method.Type.In(2)
+	req := reflect.New(parameter.Elem()).Interface()
+	json.Unmarshal([]byte(request), req)
+
+	in := make([]reflect.Value, 0)
+	ctx := context.Background()
+	in = append(in, reflect.ValueOf(ctx))
+	in = append(in, reflect.ValueOf(req))
+	call := reflect.ValueOf(service).MethodByName(methodName).Call(in)
+	if call[1].Interface() != nil {
+		e := call[1].Interface().(error)
+		st, _ := status.FromError(e)
+		return nil, int(st.Code()), e
+	}
+
+	marshal, err := json.Marshal(call[0].Interface())
+	if err != nil {
+		return nil, int(codes.Aborted), errors.New("json marshal error")
+	}
+	return string(marshal), 0, nil
 }

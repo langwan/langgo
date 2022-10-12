@@ -43,7 +43,7 @@ func BenchmarkZerologFile(b *testing.B) {
 
 func BenchmarkZerologConsole(b *testing.B) {
 	io.CreateFolder("logs", true)
-	logfile := "logs/zerolog.log"
+	logfile := "logs/zerolog-console.log"
 	os.Remove(logfile)
 	f, _ := os.OpenFile(logfile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	zc := zerolog.ConsoleWriter{Out: f, TimeFormat: time.RFC3339, NoColor: true}

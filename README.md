@@ -62,7 +62,7 @@ func main() {
 
 ## 日志
 
-日志扩展自 (zerolog)[https://github.com/rs/zerolog]
+日志扩展自 [zerolog](https://github.com/rs/zerolog)
 
 特性：
 
@@ -177,6 +177,6 @@ BenchmarkLoggerLanggoMulti-8   	  446125	      2660 ns/op
 ```
 * BenchmarkLoggerSystemLog-8 使用go自带的log写入文件 大概是54万次/秒
 * BenchmarkZerologFile-8 使用zerolog直接写入文件 大概是 50万次/秒
-* BenchmarkZerologConsole-8 使用zerolog的consoleWriter包装以后写入文件 大概是 22万次/秒 关于zerolog的这个问题（请参考我的B站视频 (优化日志写入速度)[https://www.bilibili.com/video/BV1XN4y1c7Jj/?spm_id_from=333.999.0.0]）
+* BenchmarkZerologConsole-8 使用zerolog的consoleWriter包装以后写入文件 大概是 22万次/秒 关于zerolog的这个问题，请参考我的B站视频 [优化日志写入速度](https://www.bilibili.com/video/BV1XN4y1c7Jj/?spm_id_from=333.999.0.0)
 * BenchmarkLoggerLanggo-8 使用langgo的日志（二次包装zerolog直接写入文件） 大概是 52万次/秒
 * BenchmarkLoggerLanggoMulti-8 使用langgo的动态生成日志文件功能 大概是 44万次/秒

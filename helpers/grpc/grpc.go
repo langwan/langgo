@@ -53,11 +53,11 @@ func ChainStreamServer(interceptors ...grpc.StreamServerInterceptor) grpc.Stream
 	}
 }
 
-func Call(service interface{}, methodName string, request string, header interface{}) (response interface{}, code int, err error) {
+func Call(service interface{}, methodName string, request string, header interface{}) (response string, code int, err error) {
 	tp := reflect.TypeOf(service)
 	method, ok := tp.MethodByName(methodName)
 	if !ok {
-		return nil, int(codes.NotFound), status.Errorf(codes.NotFound, "%s not find", methodName)
+		return "", int(codes.NotFound), status.Errorf(codes.NotFound, "%s not find", methodName)
 	}
 
 	method.Type.NumIn()
@@ -74,12 +74,12 @@ func Call(service interface{}, methodName string, request string, header interfa
 	if call[1].Interface() != nil {
 		e := call[1].Interface().(error)
 		st, _ := status.FromError(e)
-		return nil, int(st.Code()), e
+		return "", int(st.Code()), e
 	}
 
 	marshal, err := json.Marshal(call[0].Interface())
 	if err != nil {
-		return nil, int(codes.Aborted), errors.New("json marshal error")
+		return "", int(codes.Aborted), errors.New("json marshal error")
 	}
 	return string(marshal), 0, nil
 }

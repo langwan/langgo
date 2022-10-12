@@ -11,10 +11,6 @@ import (
 	"time"
 )
 
-func TestLogger(t *testing.T) {
-	Logger("app", "test").Info().Msg("ok")
-}
-
 func BenchmarkLoggerSystemLog(b *testing.B) {
 	io.CreateFolder("logs", true)
 	logfile := "logs/syslog.log"

@@ -7,6 +7,8 @@ Langgo是一款go语言开发应用的框架。在B站以视频的形式同步�
  - [安装](#安装)
  - [快速开始](#快速开始)
  - [开发视频](#开发视频)
+ - [核心组件]
+   - [日志](#日志)
  - [组件](#组件)
    - [mysql](#mysql)
    - [redis](#redis)
@@ -15,6 +17,8 @@ Langgo是一款go语言开发应用的框架。在B站以视频的形式同步�
    - [aes](#aes)
    - [grpc](#grpc)
  - [自定义组件](#自定义组件)
+ - [性能测试]
+   - [日志写入速度](#日志写入速度)
 ## 安装
 
 基于go 1.19开发
@@ -55,6 +59,31 @@ func main() {
 ## 开发视频
 
 视频地址 https://space.bilibili.com/401571418/channel/collectiondetail?sid=699075
+
+## 日志
+
+日志扩展自 (zerolog)[https://github.com/rs/zerolog]
+
+特性：
+
+支持自定义信号切割日志
+
+在配置文件中增加log配置
+```yaml
+log:
+  reopen_signal: 31
+```
+`reopen_signal`是自定义信号量的int值，当服务收到信号以后会自动mv出新的日志文件，方便按照日、小时等自定义策略来切分日志，mv不会丢失日志。
+
+2. 支持动态创建日志文件例如 app.log order.log 方便日志分类
+
+```go
+log.Logger("app", "login").Info().Interface("request", request).Send()
+log.Logger("order", "create").Info().Interface("request", request).Send()
+```
+`app`, `order`会自动被创建为`logs/app.log`, `logs/order.log`
+
+
 
 ## grpc
 
@@ -130,3 +159,24 @@ my:
 
 支持加密、解密等方法
 
+## 日志写入速度
+
+在`core/log/log_test.go`中有相关的基准测试方法，我们跑的结果如下：
+
+```
+BenchmarkLoggerSystemLog
+BenchmarkLoggerSystemLog-8     	  540446	      2113 ns/op
+BenchmarkZerologFile
+BenchmarkZerologFile-8         	  508726	      2353 ns/op
+BenchmarkZerologConsole
+BenchmarkZerologConsole-8      	  228208	      5316 ns/op
+BenchmarkLoggerLanggo
+BenchmarkLoggerLanggo-8        	  523492	      2409 ns/op
+BenchmarkLoggerLanggoMulti
+BenchmarkLoggerLanggoMulti-8   	  446125	      2660 ns/op
+```
+* BenchmarkLoggerSystemLog-8 使用go自带的log写入文件 大概是54万次/秒
+* BenchmarkZerologFile-8 使用zerolog直接写入文件 大概是 50万次/秒
+* BenchmarkZerologConsole-8 使用zerolog的consoleWriter包装以后写入文件 大概是 22万次/秒 关于zerolog的这个问题（请参考我的B站视频 (优化日志写入速度)[https://www.bilibili.com/video/BV1XN4y1c7Jj/?spm_id_from=333.999.0.0]）
+* BenchmarkLoggerLanggo-8 使用langgo的日志（二次包装zerolog直接写入文件） 大概是 52万次/秒
+* BenchmarkLoggerLanggoMulti-8 使用langgo的动态生成日志文件功能 大概是 44万次/秒

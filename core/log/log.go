@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -28,6 +29,7 @@ type item struct {
 }
 
 var loggers = make(map[string]item)
+var lock sync.Mutex
 
 func (i *Instance) Load() {
 
@@ -56,28 +58,37 @@ func (i *Instance) GetName() string {
 
 func Logger(name string, tag string) *zerolog.Logger {
 	rp := path.Join(core.WorkerDir, "logs")
-	io.CreateFolder(rp, true)
+
 	if _, ok := loggers[name]; !ok {
-		p := path.Join(rp, fmt.Sprintf("%s.log", name))
-		rf, err := reopen.NewFileWriter(p)
-		if err != nil {
-			log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)
-		}
-		if core.EnvName == core.Development {
-			mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true})
-			l := zerolog.New(mf).With().Str("tag", tag).Timestamp().Logger()
-			loggers[name] = item{
-				logger: l,
-				writer: rf,
+		func() {
+			lock.Lock()
+			if _, ok = loggers[name]; ok {
+				fmt.Println("name", "exists")
+				return
 			}
-		} else {
-			zc := zerolog.ConsoleWriter{Out: rf, TimeFormat: time.RFC3339, NoColor: true}
-			l := zerolog.New(zc).With().Str("tag", tag).Timestamp().Logger()
-			loggers[name] = item{
-				logger: l,
-				writer: rf,
+			defer lock.Unlock()
+			io.CreateFolder(rp, true)
+			p := path.Join(rp, fmt.Sprintf("%s.log", name))
+			rf, err := reopen.NewFileWriter(p)
+			if err != nil {
+				log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)
 			}
-		}
+			if core.EnvName == core.Development {
+				mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, rf)
+				l := zerolog.New(mf).With().Str("tag", tag).Timestamp().Logger()
+				loggers[name] = item{
+					logger: l,
+					writer: rf,
+				}
+			} else {
+
+				l := zerolog.New(rf).With().Str("tag", tag).Timestamp().Logger()
+				loggers[name] = item{
+					logger: l,
+					writer: rf,
+				}
+			}
+		}()
 	}
 	it := loggers[name]
 	return &it.logger

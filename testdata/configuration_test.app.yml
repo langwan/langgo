@@ -9,3 +9,8 @@ mysql:
 redis:
   main:
     dsn: redis://default:redispw@localhost:55000/0
+oss:
+  endpoint: oss-cn-hangzhou.aliyuncs.com
+  access_key_id: xxxx
+  access_key_secret: xxxx
+  bucket_name: xxxx

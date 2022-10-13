@@ -16,6 +16,7 @@ type item struct {
 var connections = make(map[string]*redis.Client)
 
 type Instance struct {
+	items map[string]item
 }
 
 func (i *Instance) GetName() string {
@@ -23,13 +24,14 @@ func (i *Instance) GetName() string {
 }
 
 func (i *Instance) Load() error {
+	i.items = make(map[string]item)
+	core.GetComponentConfiguration(name, &i.items)
+	return i.Run()
+}
+
+func (i *Instance) Run() error {
 	instance = i
-
-	items := make(map[string]item)
-
-	core.GetComponentConfiguration(name, &items)
-
-	for k, c := range items {
+	for k, c := range i.items {
 		opt, err := redis.ParseURL(c.Dsn)
 		if err != nil {
 			return err

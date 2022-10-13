@@ -22,10 +22,10 @@ func (i *Instance) GetName() string {
 
 func (i *Instance) Load() error {
 	core.GetComponentConfiguration(name, i)
-	return i.load()
+	return i.Run()
 }
 
-func (i *Instance) load() error {
+func (i *Instance) Run() error {
 	instance = i
 	var err error
 	db, err = gorm.Open(sqlite.Open(i.Path), &gorm.Config{})

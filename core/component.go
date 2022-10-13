@@ -2,6 +2,7 @@ package core
 
 type Component interface {
 	Load() error
+	Run() error
 	GetName() string
 }
 
@@ -17,5 +18,11 @@ func LoadComponents() {
 func AddComponents(instances ...Component) {
 	for _, c := range instances {
 		components[c.GetName()] = c
+	}
+}
+func RunComponents(instances ...Component) {
+	for _, c := range instances {
+		components[c.GetName()] = c
+		c.Run()
 	}
 }

@@ -49,14 +49,13 @@ func Init() {
 	l.Load()
 }
 
-//func init() {
-//	Init()
-//
-//}
-
 func Run(instances ...core.Component) {
 	Init()
 	core.AddComponents(instances...)
 	core.LoadComponents()
 	core.SignalNotify()
+}
+
+func RunComponent(instances ...core.Component) {
+	core.RunComponents(instances...)
 }

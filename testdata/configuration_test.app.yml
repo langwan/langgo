@@ -14,3 +14,7 @@ oss:
   access_key_id: xxxx
   access_key_secret: xxxx
   bucket_name: xxxx
+hello:
+  message: hello
+sqlite:
+  path: "../../testdata/sqlite_test.db"

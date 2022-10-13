@@ -22,8 +22,12 @@ type Instance struct {
 var instance *Instance
 
 func (i *Instance) Load() error {
-	instance = i
 	core.GetComponentConfiguration(name, i)
+	return i.Run()
+}
+
+func (i *Instance) Run() error {
+	instance = i
 	var err error
 	i.client, err = dysmsapi.NewClientWithAccessKey(i.RegionId, i.AccessKeyId, i.AccessKeySecret)
 	if err != nil {

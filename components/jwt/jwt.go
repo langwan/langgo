@@ -4,10 +4,11 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/langwan/langgo/core"
+	helperString "github.com/langwan/langgo/helpers/string"
 	"strings"
 )
 
@@ -24,8 +25,15 @@ func (i *Instance) GetName() string {
 }
 
 func (i *Instance) Load() error {
-	instance = i
 	core.GetComponentConfiguration(name, i)
+	return i.Run()
+}
+
+func (i *Instance) Run() error {
+	instance = i
+	if helperString.IsEmpty(i.Secret) {
+		return errors.New("secret is empty")
+	}
 	return nil
 }
 
@@ -52,18 +60,23 @@ func hs256(secret, data []byte) (ret string, err error) {
 }
 
 func Sign(payload interface{}) (ret string, err error) {
+
+	if helperString.IsEmpty(instance.Secret) {
+		return "", errors.New("secret is empty")
+	}
+
 	h := header{
 		Alg: alg,
 		Typ: "JWT",
 	}
-	marshal, err := json.Marshal(h)
+	marshal, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(h)
 	if err != nil {
 		return "", err
 	}
 
 	bh := base64.RawURLEncoding.EncodeToString(marshal)
 
-	marshal, err = json.Marshal(payload)
+	marshal, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(payload)
 	if err != nil {
 		return "", err
 	}
@@ -81,6 +94,11 @@ func Sign(payload interface{}) (ret string, err error) {
 }
 
 func Verify(token string) (err error) {
+
+	if helperString.IsEmpty(instance.Secret) {
+		return errors.New("secret is empty")
+	}
+
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		return errors.New("parts len error")

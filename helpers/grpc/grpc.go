@@ -2,8 +2,9 @@ package helperGrpc
 
 import (
 	"context"
-	"encoding/json"
+
 	"errors"
+	jsoniter "github.com/json-iterator/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -64,7 +65,7 @@ func Call(service interface{}, methodName string, request string, header interfa
 
 	parameter := method.Type.In(2)
 	req := reflect.New(parameter.Elem()).Interface()
-	json.Unmarshal([]byte(request), req)
+	jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal([]byte(request), req)
 
 	in := make([]reflect.Value, 0)
 	ctx := context.Background()
@@ -76,8 +77,7 @@ func Call(service interface{}, methodName string, request string, header interfa
 		st, _ := status.FromError(e)
 		return "", int(st.Code()), e
 	}
-
-	marshal, err := json.Marshal(call[0].Interface())
+	marshal, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(call[0].Interface())
 	if err != nil {
 		return "", int(codes.Aborted), errors.New("json marshal error")
 	}

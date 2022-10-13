@@ -13,12 +13,13 @@ Langgo是一款go语言开发应用的框架。在B站以视频的形式同步�
    - [mysql](#mysql)
    - [redis](#redis)
    - [sqlite](#sqlite)
- - [helper](#helper) 
+ - [helper](#helper)
    - [rsa](#rsa)
    - [aes](#aes)
    - [grpc](#grpc)
  - [自定义组件](#自定义组件)
- - [性能测试]
+ - [跨平台](#跨平台)
+ - [性能测试](#性能测试)
    - [日志写入速度](#日志写入速度)
 ## 安装
 
@@ -56,6 +57,24 @@ func main() {
 
 组件有两个特征，需要配置或者需要持久化的实例，例如`mysql`，需要对数据库连接参数进行配置，连接也需要持久化在内存当中，这两种情况下需要制作成组件。`langgo`有一些内置的组件。
 
+组件有两种加载方式
+
+第一种使用`Run()`从配置文件中加载参数：
+
+```go
+ langgo.Run(&Instance{})
+ fmt.Println(Get().Message)
+```
+
+第二种使用`RunComponent()`，在创建对象的时候赋值参数：
+
+```go
+langgo.Run()
+langgo.RunComponent(&Instance{Message: "hello"})
+assert.Equal(t, Get().Message, "hello")
+```
+
+例如`sqlite`组件只有一个参数`path`，当我们想把数据库放在操作系统的`home`目录下的时候，需要在程序中初始化路径，这时候可以直接用这种方式赋值。但`Run()`方法依然是必须的。
 
 ## 开发视频
 
@@ -190,7 +209,17 @@ my:
 
 支持加密、解密等方法
 
+## 跨平台
+
+在`helper/platform`存放跨平台桌面开发有关的函数，目前只有`GetDefaultDocumentFolderPath()`获取系统document目录的函数，这下面的函数都应该具备`osx`和`windows`兼容的函数
+
+## 性能测试
+
+与`langgo`框架性能相关的测试
+
 ## 日志写入速度
+
+测试主机一台 `Mac mini (M1, 2020) Apple M1(4性能和4能效） 16 GB`
 
 在`core/log/log_test.go`中有相关的基准测试方法，我们跑的结果如下：
 

@@ -3,7 +3,6 @@ package helperGrpc
 import (
 	"context"
 
-	"errors"
 	jsoniter "github.com/json-iterator/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -54,7 +53,7 @@ func ChainStreamServer(interceptors ...grpc.StreamServerInterceptor) grpc.Stream
 	}
 }
 
-func Call(service interface{}, methodName string, request string, header interface{}) (response string, code int, err error) {
+func Call(service interface{}, methodName string, request string, header interface{}) (response interface{}, code int, err error) {
 	tp := reflect.TypeOf(service)
 	method, ok := tp.MethodByName(methodName)
 	if !ok {
@@ -77,9 +76,6 @@ func Call(service interface{}, methodName string, request string, header interfa
 		st, _ := status.FromError(e)
 		return "", int(st.Code()), e
 	}
-	marshal, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(call[0].Interface())
-	if err != nil {
-		return "", int(codes.Aborted), errors.New("json marshal error")
-	}
-	return string(marshal), 0, nil
+
+	return call[0].Interface(), 0, nil
 }

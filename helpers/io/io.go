@@ -2,6 +2,8 @@ package io
 
 import (
 	"errors"
+	"fmt"
+	sysio "io"
 	"os"
 )
 
@@ -39,4 +41,34 @@ func FileExists(filename string) bool {
 		return false
 	}
 	return true
+}
+
+func MoveFile(source string, dest string) error {
+	err := CopyFile(source, dest)
+	if err != nil {
+		return err
+	}
+	err = os.Remove(source)
+	if err != nil {
+		return fmt.Errorf("failed removing original file: %s", err)
+	}
+	return nil
+}
+
+func CopyFile(source string, dest string) error {
+	inputFile, err := os.Open(source)
+	defer inputFile.Close()
+	if err != nil {
+		return fmt.Errorf("couldn't open source file: %s", err)
+	}
+	outputFile, err := os.Create(dest)
+	defer outputFile.Close()
+	if err != nil {
+		return fmt.Errorf("couldn't open dest file: %s", err)
+	}
+	_, err = sysio.Copy(outputFile, inputFile)
+	if err != nil {
+		return fmt.Errorf("writing to output file failed: %s", err)
+	}
+	return nil
 }

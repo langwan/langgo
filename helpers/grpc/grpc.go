@@ -1,13 +1,7 @@
 package helperGrpc
 
 import (
-	"context"
-
-	jsoniter "github.com/json-iterator/go"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"reflect"
 )
 
 // from https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/chain.go
@@ -51,31 +45,4 @@ func ChainStreamServer(interceptors ...grpc.StreamServerInterceptor) grpc.Stream
 		}
 		return interceptors[0](srv, stream, info, currHandler)
 	}
-}
-
-func Call(service interface{}, methodName string, request string, header interface{}) (response interface{}, code int, err error) {
-	tp := reflect.TypeOf(service)
-	method, ok := tp.MethodByName(methodName)
-	if !ok {
-		return "", int(codes.NotFound), status.Errorf(codes.NotFound, "%s not find", methodName)
-	}
-
-	method.Type.NumIn()
-
-	parameter := method.Type.In(2)
-	req := reflect.New(parameter.Elem()).Interface()
-	jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal([]byte(request), req)
-
-	in := make([]reflect.Value, 0)
-	ctx := context.Background()
-	in = append(in, reflect.ValueOf(ctx))
-	in = append(in, reflect.ValueOf(req))
-	call := reflect.ValueOf(service).MethodByName(methodName).Call(in)
-	if call[1].Interface() != nil {
-		e := call[1].Interface().(error)
-		st, _ := status.FromError(e)
-		return "", int(st.Code()), e
-	}
-
-	return call[0].Interface(), 0, nil
 }

@@ -1,0 +1,5 @@
+baseURL = "http://langwan.githubo.io/langgo/"
+languageCode = "zh-cn"
+title = "Langgo"
+BookSection = 'docs'
+theme = "hugo-book"

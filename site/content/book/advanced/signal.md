@@ -29,11 +29,11 @@ func main() {
 	fmt.Printf("pid = %d\n", os.Getpid())
 	<-done
 }
+```
 
 SignalHandlers(handler func(sig os.Signal), signals ...os.Signal) - 绑定一个或多个信号到同一个函数
 SignalNotify() - 异步等待信号并处理，该函数只有第一次调用有效，无需多次调用
 
-```
 
 输入指令
 

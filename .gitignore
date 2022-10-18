@@ -5,3 +5,4 @@ examples/log/logs
 logs
 *.pb.go
 sourcetreeconfig
+site/resources/_gen

@@ -1,5 +1,6 @@
 baseURL = "http://langwan.githubo.io/langgo/"
 languageCode = "zh-cn"
-title = "Langgo"
-BookSection = 'docs'
+title = "Langgo v0.5.x"
 theme = "hugo-book"
+[params]
+  BookSection = 'book'

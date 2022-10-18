@@ -1,7 +1,6 @@
 package core
 
 type Component interface {
-	Load() error
 	Run() error
 	GetName() string
 }
@@ -9,9 +8,9 @@ type Component interface {
 var components = make(map[string]Component)
 
 func LoadComponents() {
-
 	for _, c := range components {
-		c.Load()
+		GetComponentConfiguration(c.GetName(), c)
+		c.Run()
 	}
 }
 

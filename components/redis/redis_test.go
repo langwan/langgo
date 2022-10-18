@@ -21,7 +21,7 @@ func TestInstance_Load(t *testing.T) {
 }
 
 func TestInstance_Run(t *testing.T) {
-	langgo.RunComponent(&Instance{items: map[string]item{"main": {Dsn: "redis://default:redispw@localhost:55000/0"}}})
+	langgo.RunComponent(&Instance{Items: map[string]item{"main": {Dsn: "redis://default:redispw@localhost:55000/0"}}})
 	value := "langgo"
 	Main().Set("name", value, 10*time.Second)
 	getValue, err := Main().Get("name").Result()

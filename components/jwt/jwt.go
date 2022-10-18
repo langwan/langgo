@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/langwan/langgo/core"
 	helperString "github.com/langwan/langgo/helpers/string"
 	"strings"
 )
@@ -22,11 +21,6 @@ var instance *Instance
 
 func (i *Instance) GetName() string {
 	return name
-}
-
-func (i *Instance) Load() error {
-	core.GetComponentConfiguration(name, i)
-	return i.Run()
 }
 
 func (i *Instance) Run() error {
@@ -94,11 +88,9 @@ func Sign(payload interface{}) (ret string, err error) {
 }
 
 func Verify(token string) (err error) {
-
 	if helperString.IsEmpty(instance.Secret) {
 		return errors.New("secret is empty")
 	}
-
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		return errors.New("parts len error")

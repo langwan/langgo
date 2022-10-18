@@ -1,4 +1,4 @@
-package reopen
+package helper_reopen
 
 import (
 	"bufio"

@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"github.com/langwan/langgo/core"
 	"github.com/langwan/langgo/core/log"
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,22 +26,16 @@ type item struct {
 var connections = make(map[string]*gorm.DB)
 
 type Instance struct {
-	items map[string]item
+	Items map[string]item `json:"items"`
 }
 
 func (i *Instance) GetName() string {
 	return name
 }
 
-func (i *Instance) Load() error {
-	i.items = make(map[string]item)
-	core.GetComponentConfiguration(name, &i.items)
-	return i.Run()
-}
-
 func (i *Instance) Run() error {
 	instance = i
-	for k, c := range i.items {
+	for k, c := range i.Items {
 		zl := log.Logger("mysql", k)
 
 		l := New(*zl, gormlogger.Config{

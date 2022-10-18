@@ -4,6 +4,14 @@ title: "创建一个应用"
 ---
 # 创建一个应用
 
+## 结构
+
+```
+project_root\
+└── main.go
+└── app.yml
+```
+
 每个应用都是通过 langgo.Run 函数开始的
 
 ```go
@@ -38,6 +46,6 @@ func main() {
 
 获取到的输出：
 
-```shell
+```
 hello langgo
 ```

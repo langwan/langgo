@@ -3,10 +3,10 @@ package log
 import (
 	"fmt"
 	"github.com/langwan/langgo/core"
-	"github.com/langwan/langgo/helpers/io"
+	"github.com/langwan/langgo/helpers/os"
 	"github.com/langwan/langgo/helpers/reopen"
 	"github.com/rs/zerolog"
-	sysio "io"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -25,7 +25,7 @@ var instance *Instance
 
 type item struct {
 	logger zerolog.Logger
-	writer reopen.Writer
+	writer helper_reopen.Writer
 }
 
 var loggers = make(map[string]item)
@@ -67,14 +67,14 @@ func Logger(name string, tag string) *zerolog.Logger {
 				return
 			}
 			defer lock.Unlock()
-			io.CreateFolder(rp, true)
+			helper_os.CreateFolder(rp, true)
 			p := path.Join(rp, fmt.Sprintf("%s.log", name))
-			rf, err := reopen.NewFileWriter(p)
+			rf, err := helper_reopen.NewFileWriter(p)
 			if err != nil {
 				log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)
 			}
 			if core.EnvName == core.Development {
-				mf := sysio.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, rf)
+				mf := io.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, rf)
 				l := zerolog.New(mf).With().Str("tag", tag).Timestamp().Logger()
 				loggers[name] = item{
 					logger: l,

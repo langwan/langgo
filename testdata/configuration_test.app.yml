@@ -1,14 +1,16 @@
 jwt:
   secret: "123456"
 mysql:
-  main:
-    conn_max_lifetime: 1h
-    dsn: root:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local
-    max_idle_conns: 1
-    max_open_conns: 10
+  items:
+    main:
+      conn_max_lifetime: 1h
+      dsn: root:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local
+      max_idle_conns: 1
+      max_open_conns: 10
 redis:
-  main:
-    dsn: redis://default:redispw@localhost:55000/0
+  items:
+    main:
+      dsn: redis://default:redispw@localhost:55000/0
 oss:
   endpoint: oss-cn-hangzhou.aliyuncs.com
   access_key_id: xxxx
@@ -18,3 +20,5 @@ hello:
   message: hello
 sqlite:
   path: "../../testdata/sqlite_test.db"
+my:
+  message: "im custom component"

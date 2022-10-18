@@ -1,7 +1,6 @@
 package sqlite
 
 import (
-	"github.com/langwan/langgo/core"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -18,11 +17,6 @@ var instance *Instance
 
 func (i *Instance) GetName() string {
 	return name
-}
-
-func (i *Instance) Load() error {
-	core.GetComponentConfiguration(name, i)
-	return i.Run()
 }
 
 func (i *Instance) Run() error {

@@ -1,4 +1,4 @@
-package rsa
+package helper_rsa
 
 import (
 	"github.com/stretchr/testify/assert"

@@ -2,7 +2,6 @@ package redis
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/langwan/langgo/core"
 )
 
 const name = "redis"
@@ -16,22 +15,16 @@ type item struct {
 var connections = make(map[string]*redis.Client)
 
 type Instance struct {
-	items map[string]item
+	Items map[string]item
 }
 
 func (i *Instance) GetName() string {
 	return name
 }
 
-func (i *Instance) Load() error {
-	i.items = make(map[string]item)
-	core.GetComponentConfiguration(name, &i.items)
-	return i.Run()
-}
-
 func (i *Instance) Run() error {
 	instance = i
-	for k, c := range i.items {
+	for k, c := range i.Items {
 		opt, err := redis.ParseURL(c.Dsn)
 		if err != nil {
 			return err

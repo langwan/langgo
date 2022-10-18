@@ -53,7 +53,7 @@ func Run(instances ...core.Component) {
 	Init()
 	core.AddComponents(instances...)
 	core.LoadComponents()
-	core.SignalNotify()
+	//core.SignalNotify()
 }
 
 // Deprecated

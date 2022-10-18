@@ -11,12 +11,10 @@ import (
 	"os"
 	"path"
 	"sync"
-	"syscall"
 	"time"
 )
 
 type Instance struct {
-	ReopenSignal syscall.Signal `yaml:"reopen_signal"`
 }
 
 const name = "log"
@@ -31,24 +29,21 @@ type item struct {
 var loggers = make(map[string]item)
 var lock sync.Mutex
 
-func (i *Instance) Load() {
+func SetCuttingSignal(sig os.Signal) {
+	core.SignalHandlers(func(sig os.Signal) {
+		for _, it := range loggers {
+			it.writer.Reopen()
+		}
+	}, sig)
+}
 
+func (i *Instance) Load() {
 	instance = i
 	core.GetComponentConfiguration(name, i)
 	if core.EnvName == core.Development {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	} else {
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	}
-	if i.ReopenSignal > 0 {
-		core.SignalHandle(&core.SignalHandler{
-			Sig: i.ReopenSignal,
-			F: func() {
-				for _, it := range loggers {
-					it.writer.Reopen()
-				}
-			},
-		})
 	}
 }
 

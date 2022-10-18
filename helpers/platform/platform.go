@@ -1,7 +1,7 @@
 package platform
 
 import (
-	"github.com/langwan/langgo/helpers/io"
+	"github.com/langwan/langgo/helpers/os"
 	"os/user"
 	"path"
 )
@@ -9,7 +9,7 @@ import (
 func GetDefaultDocumentFolderPath() (document string) {
 	u, _ := user.Current()
 	p := path.Join(u.HomeDir, "Documents")
-	if io.FolderExists(p) == false {
+	if helper_os.FolderExists(p) == false {
 		return ""
 	}
 	return p

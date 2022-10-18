@@ -34,7 +34,7 @@ langgo.Run(&hello.Instance{Message: "hello"}})
 
 ## 内置组件
 
-这些组件是 langgo 框架内置的组件，例如 mysql、redis、github 使用这些组件可以搭建应用系统。
+这些组件是 langgo 框架内置的组件，例如 mysql、redis、sqlite 使用这些组件可以搭建应用系统。
 
 ## 自定义组件
 

@@ -8,6 +8,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 func GetGoroutineId() uint64 {
@@ -83,4 +84,18 @@ func CopyFile(source string, dest string) error {
 		return fmt.Errorf("writing to output file failed: %s", err)
 	}
 	return nil
+}
+
+func ReadDir(name string, ignoreDotFiles bool) (files []os.DirEntry, err error) {
+	src, err := os.ReadDir(name)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range src {
+		if ignoreDotFiles && strings.HasPrefix(f.Name(), ".") {
+			continue
+		}
+		files = append(files, f)
+	}
+	return files, nil
 }

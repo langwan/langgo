@@ -36,3 +36,9 @@ func main() {
 ```
 core.GetComponentConfiguration 方法可以把自定义配置绑定到对象上。
 
+配置 app.yml
+
+```yaml
+my_configuration:
+  my_name: "langgo"
+```

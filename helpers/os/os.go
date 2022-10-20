@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/h2non/filetype"
+	"github.com/h2non/filetype/types"
 	"io"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -241,4 +244,45 @@ func ReadDir(name string, ignoreDotFiles bool) (files []os.DirEntry, err error) 
 		files = append(files, f)
 	}
 	return files, nil
+}
+
+type FileInfo struct {
+	Name   string
+	Path   string
+	Mime   types.Type
+	Head   []byte
+	Width  float64
+	Height float64
+	Stat   os.FileInfo
+}
+
+// GetFileInfo returns a FileInfo describing the named file.
+// If there is an error, fi = nil.
+func GetFileInfo(src string) (fi *FileInfo, err error) {
+	fi = &FileInfo{}
+	fi.Path = src
+	fi.Name = filepath.Base(src)
+	openFile, err := os.Open(src)
+	if err != nil {
+		return nil, err
+	}
+	defer openFile.Close()
+
+	fi.Head = make([]byte, 261)
+	_, err = openFile.Read(fi.Head)
+	if err != nil {
+		return nil, err
+	}
+
+	fi.Mime, err = filetype.Get(fi.Head)
+	if err != nil {
+		return nil, err
+	}
+
+	fi.Stat, err = os.Stat(src)
+	if err != nil {
+		return nil, err
+	}
+
+	return fi, nil
 }

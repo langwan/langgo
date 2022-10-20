@@ -75,7 +75,7 @@ func TestMoveFileWatcher(t *testing.T) {
 			name: "move",
 			args: args{
 				source:   src,
-				dest:     "../../testdata/2.mp4",
+				dest:     "../../testdata/sample2.jpg",
 				buf:      make([]byte, 128*1024),
 				listener: &Listener{},
 			},
@@ -93,6 +93,38 @@ func TestMoveFileWatcher(t *testing.T) {
 			if gotWritten != tt.wantWritten {
 				t.Errorf("MoveFileWatcher() gotWritten = %v, want %v", gotWritten, tt.wantWritten)
 			}
+		})
+	}
+}
+
+func TestGetFileInfo(t *testing.T) {
+	type args struct {
+		src string
+	}
+	tests := []struct {
+		name string
+		args args
+
+		wantErr bool
+	}{
+		{
+			name: "info",
+			args: args{
+				src: "../../testdata/sample.jpg",
+			},
+
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotFi, err := GetFileInfo(tt.args.src)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetFileInfo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			t.Log(gotFi.Stat.Size())
+			t.Log(gotFi.Mime)
 		})
 	}
 }

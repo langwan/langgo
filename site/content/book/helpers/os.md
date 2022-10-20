@@ -23,3 +23,5 @@ func MoveFile(source string, dest string) (written int64, err error) - 移动文
 func CopyFileWatcher(source string, dest string, buf []byte, listener IOProgressListener) (written int64, err error) - 拷贝文件并反馈进度
 
 func MoveFileWatcher(source string, dest string, buf []byte, listener IOProgressListener) (written int64, err error) - 移动文件并反馈进度
+
+func GetFileInfo(src string) (fi *FileInfo, err error) - 获取文件的属性 长度 MIME类型 路径 HEAD 

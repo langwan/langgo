@@ -14,7 +14,7 @@ func (l *Listener) ProgressChanged(event *ProgressEvent) {
 }
 
 func TestCopyFileWatcher(t *testing.T) {
-	src := "../../testdata/1.mp4"
+	src := "../../testdata/sample.jpg"
 	stat, err := os.Stat(src)
 	assert.NoError(t, err)
 	type args struct {
@@ -32,8 +32,8 @@ func TestCopyFileWatcher(t *testing.T) {
 		{
 			name: "copy",
 			args: args{
-				source:   "../../testdata/1.mp4",
-				dest:     "../../testdata/2.mp4",
+				source:   src,
+				dest:     "../../testdata/sample2.jpg",
 				buf:      make([]byte, 128*1024),
 				listener: &Listener{},
 			},
@@ -56,7 +56,7 @@ func TestCopyFileWatcher(t *testing.T) {
 }
 
 func TestMoveFileWatcher(t *testing.T) {
-	src := "../../testdata/1.mp4"
+	src := "../../testdata/sample.jpg"
 	stat, err := os.Stat(src)
 	assert.NoError(t, err)
 	type args struct {
@@ -74,7 +74,7 @@ func TestMoveFileWatcher(t *testing.T) {
 		{
 			name: "move",
 			args: args{
-				source:   "../../testdata/1.mp4",
+				source:   src,
 				dest:     "../../testdata/2.mp4",
 				buf:      make([]byte, 128*1024),
 				listener: &Listener{},

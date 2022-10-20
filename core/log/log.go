@@ -9,7 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -52,7 +52,7 @@ func (i *Instance) GetName() string {
 }
 
 func Logger(name string, tag string) *zerolog.Logger {
-	rp := path.Join(core.WorkerDir, "logs")
+	rp := filepath.Join(core.WorkerDir, "logs")
 
 	if _, ok := loggers[name]; !ok {
 		func() {
@@ -63,7 +63,7 @@ func Logger(name string, tag string) *zerolog.Logger {
 			}
 			defer lock.Unlock()
 			helper_os.CreateFolder(rp, true)
-			p := path.Join(rp, fmt.Sprintf("%s.log", name))
+			p := filepath.Join(rp, fmt.Sprintf("%s.log", name))
 			rf, err := helper_reopen.NewFileWriter(p)
 			if err != nil {
 				log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)

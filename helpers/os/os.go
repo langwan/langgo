@@ -66,12 +66,12 @@ func FileExists(filename string) bool {
 // A successful MoveFile returns err == nil, not err == EOF.
 // Because MoveFile is defined to read from src until EOF, it does
 // not treat an EOF from Read as an error to be reported.
-func MoveFile(source string, dest string) (written int64, err error) {
-	written, err = CopyFile(source, dest)
+func MoveFile(dst string, src string) (written int64, err error) {
+	written, err = CopyFile(dst, src)
 	if err != nil {
 		return written, err
 	}
-	err = os.Remove(source)
+	err = os.Remove(src)
 	if err != nil {
 		return written, fmt.Errorf("failed removing original file: %s", err)
 	}
@@ -108,19 +108,19 @@ type IOProgressListener interface {
 // A successful CopyFile returns err == nil, not err == EOF.
 // Because CopyFile is defined to read from src until EOF, it does
 // not treat an EOF from Read as an error to be reported.
-func CopyFile(source string, dest string) (written int64, err error) {
-	sourceFile, err := os.Open(source)
+func CopyFile(dst string, src string) (written int64, err error) {
+	srcFile, err := os.Open(src)
 	if err != nil {
 		return written, fmt.Errorf("couldn't open source file: %s", err)
 	}
-	defer sourceFile.Close()
+	defer srcFile.Close()
 
-	destFile, err := os.Create(dest)
+	dstFile, err := os.Create(dst)
 	if err != nil {
 		return written, fmt.Errorf("couldn't open dest file: %s", err)
 	}
-	defer destFile.Close()
-	written, err = io.Copy(destFile, sourceFile)
+	defer dstFile.Close()
+	written, err = io.Copy(dstFile, srcFile)
 	if err != nil {
 		return written, fmt.Errorf("writing to output file failed: %s", err)
 	}
@@ -130,20 +130,20 @@ func CopyFile(source string, dest string) (written int64, err error) {
 var ErrInvalidWrite = errors.New("invalid write result")
 
 // CopyFileWatcher is identical to CopyBuffer except that it provided listener (if one is required).
-func CopyFileWatcher(source string, dest string, buf []byte, listener IOProgressListener) (written int64, err error) {
-	var sourceSize int64 = 0
+func CopyFileWatcher(dst string, src string, buf []byte, listener IOProgressListener) (written int64, err error) {
+	var srcSize int64 = 0
 	defer func() {
 		if listener != nil {
 			if err != nil {
 				listener.ProgressChanged(&ProgressEvent{
 					ConsumedBytes: written,
-					TotalBytes:    sourceSize,
+					TotalBytes:    srcSize,
 					EventType:     TransferFailedEvent,
 				})
 			} else {
 				listener.ProgressChanged(&ProgressEvent{
 					ConsumedBytes: written,
-					TotalBytes:    sourceSize,
+					TotalBytes:    srcSize,
 					EventType:     TransferCompletedEvent,
 				})
 			}
@@ -155,14 +155,14 @@ func CopyFileWatcher(source string, dest string, buf []byte, listener IOProgress
 		return written, err
 	}
 
-	sourceFile, err := os.Open(source)
+	srcFile, err := os.Open(src)
 	if err != nil {
 		return written, fmt.Errorf("couldn't open source file: %s", err)
 	}
-	defer sourceFile.Close()
+	defer srcFile.Close()
 
-	sourceStat, err := sourceFile.Stat()
-	sourceSize = sourceStat.Size()
+	srcStat, err := srcFile.Stat()
+	srcSize = srcStat.Size()
 	if err != nil {
 		return written, fmt.Errorf("source file stat: %s", err)
 	}
@@ -170,21 +170,21 @@ func CopyFileWatcher(source string, dest string, buf []byte, listener IOProgress
 	if listener != nil {
 		listener.ProgressChanged(&ProgressEvent{
 			ConsumedBytes: 0,
-			TotalBytes:    sourceSize,
+			TotalBytes:    srcSize,
 			EventType:     TransferStartedEvent,
 		})
 	}
 
-	destFile, err := os.Create(dest)
+	dstFile, err := os.Create(dst)
 	if err != nil {
 		return written, fmt.Errorf("couldn't open dest file: %s", err)
 	}
-	defer destFile.Close()
+	defer dstFile.Close()
 
 	for {
-		nr, er := sourceFile.Read(buf)
+		nr, er := srcFile.Read(buf)
 		if nr > 0 {
-			nw, ew := destFile.Write(buf[0:nr])
+			nw, ew := dstFile.Write(buf[0:nr])
 			if nw < 0 || nr < nw {
 				nw = 0
 				if ew == nil {
@@ -210,7 +210,7 @@ func CopyFileWatcher(source string, dest string, buf []byte, listener IOProgress
 		if listener != nil {
 			listener.ProgressChanged(&ProgressEvent{
 				ConsumedBytes: written,
-				TotalBytes:    sourceStat.Size(),
+				TotalBytes:    srcStat.Size(),
 				EventType:     TransferDataEvent,
 			})
 		}
@@ -220,12 +220,12 @@ func CopyFileWatcher(source string, dest string, buf []byte, listener IOProgress
 }
 
 // MoveFileWatcher is identical to CopyFileWatcher except that it remove the source file when completes
-func MoveFileWatcher(source string, dest string, buf []byte, listener IOProgressListener) (written int64, err error) {
-	written, err = CopyFileWatcher(source, dest, buf, listener)
+func MoveFileWatcher(dst string, src string, buf []byte, listener IOProgressListener) (written int64, err error) {
+	written, err = CopyFileWatcher(dst, src, buf, listener)
 	if err != nil {
 		return written, err
 	}
-	err = os.Remove(source)
+	err = os.Remove(src)
 	if err != nil {
 		return written, fmt.Errorf("failed removing original file: %s", err)
 	}

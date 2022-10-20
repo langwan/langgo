@@ -43,7 +43,7 @@ func TestCopyFileWatcher(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotWritten, err := CopyFileWatcher(tt.args.source, tt.args.dest, tt.args.buf, tt.args.listener)
+			gotWritten, err := CopyFileWatcher(tt.args.dest, tt.args.source, tt.args.buf, tt.args.listener)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CopyFileWatcher() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -85,7 +85,7 @@ func TestMoveFileWatcher(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotWritten, err := MoveFileWatcher(tt.args.source, tt.args.dest, tt.args.buf, tt.args.listener)
+			gotWritten, err := MoveFileWatcher(tt.args.dest, tt.args.source, tt.args.buf, tt.args.listener)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("MoveFileWatcher() error = %v, wantErr %v", err, tt.wantErr)
 				return

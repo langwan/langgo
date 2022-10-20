@@ -150,9 +150,9 @@ func CopyFileWatcher(dst string, src string, buf []byte, listener IOProgressList
 		}
 	}()
 
-	if buf != nil && len(buf) == 0 {
-		err = errors.New("empty buffer in CopyFileWatcher")
-		return written, err
+	if buf == nil {
+		size := 32 * 1024
+		buf = make([]byte, size)
 	}
 
 	srcFile, err := os.Open(src)

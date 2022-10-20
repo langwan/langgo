@@ -34,7 +34,7 @@ func TestCopyFileWatcher(t *testing.T) {
 			args: args{
 				source:   src,
 				dest:     "../../testdata/sample2.jpg",
-				buf:      make([]byte, 128*1024),
+				buf:      nil,
 				listener: &Listener{},
 			},
 			wantWritten: stat.Size(),

@@ -1,4 +1,4 @@
-package platform
+package helper_platform
 
 import (
 	"github.com/langwan/langgo/helpers/os"

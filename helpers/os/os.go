@@ -286,3 +286,8 @@ func GetFileInfo(src string) (fi *FileInfo, err error) {
 
 	return fi, nil
 }
+
+// FileNameWithoutExt filename without extension
+func FileNameWithoutExt(filename string) string {
+	return strings.TrimSuffix(filename, filepath.Ext(filename))
+}

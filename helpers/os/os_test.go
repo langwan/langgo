@@ -128,3 +128,33 @@ func TestGetFileInfo(t *testing.T) {
 		})
 	}
 }
+
+func TestFileNameWithoutExt(t *testing.T) {
+	type args struct {
+		filename string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "one",
+			args: args{
+				filename: "langgo.mp4",
+			},
+			want: "langgo",
+		}, {
+			name: "two",
+			args: args{
+				filename: "/user/langwan/langgo.mp4",
+			},
+			want: "/user/langwan/langgo",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, FileNameWithoutExt(tt.args.filename), "FileNameWithoutExt(%v)", tt.args.filename)
+		})
+	}
+}

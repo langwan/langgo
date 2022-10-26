@@ -10,7 +10,7 @@ import (
 const (
 	machineIDBits      uint8 = 10
 	sequenceNumberBits uint8 = 12
-	epoch                    = 1640995200000 //2022-1-1 00:00:00
+	epochTimestamp           = 1640995200 //2022-1-1 00:00:00
 	machineMax         int64 = -1 ^ (-1 << machineIDBits)
 	sequenceNumberMask int64 = -1 ^ (-1 << sequenceNumberBits)
 )
@@ -48,7 +48,6 @@ func New(machineID int64) (*Snowflake, error) {
 	}
 
 	s := Snowflake{machineID: machineID}
-	var curTime = time.Now()
-	s.epoch = curTime.Add(time.Unix(epoch/1000, (epoch%1000)*1000000).Sub(curTime))
+	s.epoch = time.Unix(epochTimestamp, 0)
 	return &s, nil
 }

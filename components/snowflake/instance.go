@@ -23,3 +23,11 @@ func (i *Instance) GetName() string {
 func Get() *Snowflake {
 	return instance
 }
+
+func Gen() int64 {
+	if instance != nil {
+		return instance.Gen()
+	} else {
+		return -1
+	}
+}

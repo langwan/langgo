@@ -13,9 +13,9 @@ func TestRun(t *testing.T) {
 	langgo.Run(&Instance{})
 	fmt.Printf("Int64  ID: %d\n", Get().machineID)
 	// Print out the ID in a few different ways.
-	fmt.Printf("Int64  ID: %d\n", Get().Gen())
-	fmt.Printf("Int64  ID: %d\n", Get().Gen())
-	fmt.Printf("Int64  ID: %d\n", Get().Gen())
-	fmt.Printf("Int64  ID: %d\n", Get().Gen())
-	fmt.Printf("Int64  ID: %d\n", Get().Gen())
+	fmt.Printf("Int64  ID: %d\n", Gen())
+	fmt.Printf("Int64  ID: %d\n", Gen())
+	fmt.Printf("Int64  ID: %d\n", Gen())
+	fmt.Printf("Int64  ID: %d\n", Gen())
+	fmt.Printf("Int64  ID: %d\n", Gen())
 }

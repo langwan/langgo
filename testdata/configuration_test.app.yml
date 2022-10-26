@@ -22,3 +22,5 @@ sqlite:
   path: "../../testdata/sqlite_test.db"
 my:
   message: "im custom component"
+snowflake:
+  machine_id: 1

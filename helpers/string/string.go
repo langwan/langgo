@@ -1,4 +1,4 @@
-package helperString
+package helper_string
 
 import (
 	"strings"

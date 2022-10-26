@@ -1,16 +1,15 @@
 package snowflake
 
 type Instance struct {
-	nodeId int64 `yaml:"node_id"`
+	MachineID int64 `yaml:"machine_id"`
 }
 
 const name = "snowflake"
 
-var instance *Node
+var instance *Snowflake
 
-func (i *Instance) Run() error {
-	newNode, err := NewNode(i.nodeId)
-	instance = newNode
+func (i *Instance) Run() (err error) {
+	instance, err = New(i.MachineID)
 	if err != nil {
 		return err
 	}
@@ -21,6 +20,6 @@ func (i *Instance) GetName() string {
 	return name
 }
 
-func Get() *Node {
+func Get() *Snowflake {
 	return instance
 }

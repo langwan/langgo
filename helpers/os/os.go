@@ -24,9 +24,12 @@ func GetGoroutineId() uint64 {
 }
 
 func CreateFolder(p string, ignoreExists bool) error {
-	if FolderExists(p) == true && ignoreExists == false {
-		err := errors.New("folder exists")
-		return err
+	if FolderExists(p) == true {
+		if ignoreExists == false {
+			return errors.New("folder exists")
+		} else {
+			return nil
+		}
 	}
 	if FolderExists(p) == false {
 		err := os.MkdirAll(p, os.ModePerm)
@@ -34,6 +37,29 @@ func CreateFolder(p string, ignoreExists bool) error {
 			return err
 		}
 	}
+	return nil
+}
+
+// TouchFile touch empty file, p is filepath
+// ignoreExists - if true file exists return nil, otherwise return err
+// createFolder - if true try to create folder
+func TouchFile(p string, ignoreExists bool, createFolder bool) error {
+	if FileExists(p) == true {
+		if ignoreExists == false {
+			return errors.New("file exists")
+		} else {
+			return nil
+		}
+	}
+	dir := filepath.Dir(p)
+	if createFolder {
+		err := CreateFolder(dir, true)
+		if err != nil {
+			return err
+		}
+	}
+
+	os.OpenFile(p, os.O_RDONLY|os.O_CREATE, os.ModePerm)
 	return nil
 }
 

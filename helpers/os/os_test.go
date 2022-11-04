@@ -158,3 +158,27 @@ func TestFileNameWithoutExt(t *testing.T) {
 		})
 	}
 }
+
+func TestTouchFile(t *testing.T) {
+	type args struct {
+		p string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "1",
+			args: args{
+				p: "/Users/langwan/Documents/a/b",
+			},
+			wantErr: assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.wantErr(t, TouchFile(tt.args.p, true, true), fmt.Sprintf("TouchFile(%v)", tt.args.p))
+		})
+	}
+}

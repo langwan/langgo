@@ -182,3 +182,37 @@ func TestTouchFile(t *testing.T) {
 		})
 	}
 }
+
+func TestNewFilename(t *testing.T) {
+	type args struct {
+		filename string
+		tries    int
+		rule     func(name string) string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "one",
+			args: args{
+				filename: "../../testdata/sample.jpg",
+				tries:    10,
+				rule:     nil,
+			},
+			want:    "../../testdata/sample1.jpg",
+			wantErr: assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewFilename(tt.args.filename, tt.args.tries, tt.args.rule)
+			if !tt.wantErr(t, err, fmt.Sprintf("NewFilename(%v, %v)", tt.args.filename, tt.args.tries)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "NewFilename(%v, %v, %v)", tt.args.filename, tt.args.tries, tt.args.rule)
+		})
+	}
+}

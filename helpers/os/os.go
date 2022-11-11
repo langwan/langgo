@@ -317,3 +317,31 @@ func GetFileInfo(src string) (fi *FileInfo, err error) {
 func FileNameWithoutExt(filename string) string {
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
+
+func NewFilename(filename string, tries int, rule func(name string) string) (string, error) {
+	if !FileExists(filename) {
+		return filename, nil
+	}
+
+	name := FileNameWithoutExt(filename)
+	ext := filepath.Ext(filename)
+	var newName string
+	i := 1
+
+	for {
+		if rule != nil {
+			newName = rule(name)
+		} else {
+			newName = fmt.Sprintf("%s%d", name, i)
+		}
+		newFilename := newName + ext
+		if !FileExists(newFilename) {
+			return newFilename, nil
+		}
+		if i > tries {
+			return "", errors.New("too many tries")
+		}
+		i++
+
+	}
+}

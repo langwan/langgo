@@ -29,3 +29,5 @@ func GetFileInfo(src string) (fi *FileInfo, err error) - 获取文件的属性 �
 func FileNameWithoutExt(filename string) string - 获取除了扩展名以外的文件名
 
 func TouchFile(p string, ignoreExists bool, createFolder bool) error - 创建空文件
+
+func NewFilename(filename string, tries int, rule func(name string) string) (string, error) - 如果文件存在返回新的文件名

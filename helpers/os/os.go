@@ -318,6 +318,8 @@ func FileNameWithoutExt(filename string) string {
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
+// NewFilename filename exists return new name
+// rule custom name rule
 func NewFilename(filename string, tries int, rule func(name string) string) (string, error) {
 	if !FileExists(filename) {
 		return filename, nil

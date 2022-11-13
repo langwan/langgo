@@ -27,10 +27,18 @@ bufSize - 写文件时候的缓存大小
 ```go
 func main() {
 	url := "https://xxx/xxx.mp4"
-    langgo.Run(&Instance{})
-    Get().Download(context.Background(), url, "./example.mp4", &Listener{})
+    langgo.Run(&download.Instance{})
+    httpReader := HttpReader{Url: url}
+    download.Get().Download(context.Background(), url, "./example.mp4", &httpReader, &Listener{})
 }
 ```
+
+## reader
+
+为了支持更多的协议，目前内置了两个reader
+
+HttpReader - HTTP请求
+OssReader - 阿里云oss存储请求
 
 ## 中间文件
 
@@ -41,8 +49,8 @@ xxx.dp0 - 结尾是一个数字从0-n表示分片，除了最后一个分片，�
 
 ```go
 func main() {
-    langgo.Run(&Instance{})
-    Get().Tune(10)
+    langgo.Run(&download.Instance{})
+    download.Get().Tune(10)
 }
 ```
 

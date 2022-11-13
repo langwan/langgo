@@ -11,10 +11,8 @@ import (
 	"github.com/panjf2000/ants"
 	"io"
 	"math"
-	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 var pool *ants.PoolWithFunc
@@ -66,23 +64,33 @@ type invokeParams struct {
 	ctx       context.Context
 	completed chan *part
 	failed    chan error
-	url       string
 	buf       []byte
 	dst       string
 	part      *part
 	listener  helper_progress.ProgressListener
 	fileSize  int64
+	reader    FileReader
 }
 
-func (d *Instance) Download(ctx context.Context, url, dst string, listener helper_progress.ProgressListener) (err error) {
+type FileReader interface {
+	GetFileSize() (int64, error)
+	OpenRange(offset, size int64) (io.ReadCloser, error)
+}
+
+func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, listener helper_progress.ProgressListener) (err error) {
 	db := dbPath(dst)
 	var parts []*part
+	var fileSize int64 = 0
 	if helper_os.FileExists(db) {
 		parts, err = loadDb(db)
 	} else {
-		parts, err = d.genParts(url)
+		fileSize, err = reader.GetFileSize()
+		if err != nil {
+			return err
+		}
+		parts, err = d.genParts(fileSize)
 	}
-	var fileSize int64 = 0
+
 	completedCount := 0
 	for _, part := range parts {
 		if part.isCompleted {
@@ -101,11 +109,11 @@ func (d *Instance) Download(ctx context.Context, url, dst string, listener helpe
 				ctx:       ctx,
 				completed: completed,
 				failed:    failed,
-				url:       url,
 				buf:       make([]byte, d.bufSize),
 				dst:       dpPath(part.id, dst),
 				part:      part,
 				fileSize:  fileSize,
+				reader:    reader,
 			})
 		}
 	}
@@ -182,17 +190,7 @@ func merge(dst string, parts []*part) error {
 
 	return nil
 }
-func (d *Instance) genParts(url string) (parts []*part, err error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	fileSize := resp.ContentLength
-	if fileSize == -1 {
-		return nil, errors.New("file size is error")
-	}
-
+func (d *Instance) genParts(fileSize int64) (parts []*part, err error) {
 	count := int(math.Ceil(float64(fileSize) / float64(d.partSize)))
 	var offset int64 = 0
 	remain := fileSize
@@ -263,24 +261,11 @@ func downloadPartToWriter(writer io.WriterAt, params *invokeParams) (int64, erro
 
 	var wn int64 = 0
 
-	request, err := http.NewRequest("GET", params.url, nil)
+	body, err := params.reader.OpenRange(params.part.offset, params.part.size)
 	if err != nil {
-		params.failed <- err
-		return -1, err
+		return 0, err
 	}
-
-	request.Header.Set(
-		"Range",
-		"bytes="+strconv.FormatInt(params.part.offset, 10)+"-"+strconv.FormatInt(params.part.offset+params.part.size-1, 10),
-	)
-
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		params.failed <- err
-		return -1, err
-	}
-
-	defer resp.Body.Close()
+	defer body.Close()
 	for {
 		select {
 		case <-params.ctx.Done():
@@ -289,7 +274,7 @@ func downloadPartToWriter(writer io.WriterAt, params *invokeParams) (int64, erro
 		default:
 		}
 		var n int
-		n, err = resp.Body.Read(params.buf)
+		n, err = body.Read(params.buf)
 		if err != nil && err != io.EOF {
 			params.failed <- err
 			return wn, err

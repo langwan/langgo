@@ -16,6 +16,5 @@ func TestInstance_Load(t *testing.T) {
 
 func TestInstance_Run(t *testing.T) {
 	langgo.Run(&Instance{Message: "hello"})
-	langgo.RunComponent()
 	assert.Equal(t, Get().Message, "hello")
 }

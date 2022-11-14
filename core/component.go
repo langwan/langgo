@@ -7,18 +7,20 @@ type Component interface {
 
 var components = make(map[string]Component)
 
-func LoadComponents() {
-	for _, c := range components {
+func LoadComponents(instances ...Component) {
+	for _, c := range instances {
+		components[c.GetName()] = c
 		GetComponentConfiguration(c.GetName(), c)
 		c.Run()
 	}
 }
 
-func AddComponents(instances ...Component) {
-	for _, c := range instances {
-		components[c.GetName()] = c
-	}
+// LoadComponent load component
+func LoadComponent(c Component) {
+	GetComponentConfiguration(c.GetName(), c)
+	c.Run()
 }
+
 func RunComponents(instances ...Component) {
 	for _, c := range instances {
 		components[c.GetName()] = c

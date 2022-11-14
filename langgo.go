@@ -51,14 +51,5 @@ func Init() {
 
 func Run(instances ...core.Component) {
 	Init()
-	core.AddComponents(instances...)
-	core.LoadComponents()
-	//core.SignalNotify()
-}
-
-// Deprecated
-// RunComponent 方法已经作废，完全可以使用 Run 方法替代
-// 当 Run 方法找不到配置的时候，会保留默认传入的默认值
-func RunComponent(instances ...core.Component) {
-	core.RunComponents(instances...)
+	core.LoadComponents(instances...)
 }

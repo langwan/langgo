@@ -143,7 +143,7 @@ func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, 
 			break
 		}
 	}
-	return merge(dst, parts)
+	return merge(dst, parts, fileSize, listener)
 }
 
 func (d *Instance) Tune(size int) {
@@ -156,7 +156,7 @@ func dbPath(dst string) string {
 	return filepath.Join(dstDir, fmt.Sprintf("%s%s", dstBase, suffixDb))
 }
 
-func merge(dst string, parts []*part) error {
+func merge(dst string, parts []*part, fileSize int64, listener helper_progress.ProgressListener) error {
 	dstDir := filepath.Dir(dst)
 	dstBase := filepath.Base(dst)
 	newFilename, err := helper_os.NewFilename(dst, 10, nil)
@@ -187,7 +187,12 @@ func merge(dst string, parts []*part) error {
 	for i := 0; i < len(parts); i++ {
 		os.Remove(dpPath(i, dst))
 	}
-
+	listener.ProgressChanged(&helper_progress.ProgressEvent{
+		ConsumedBytes: fileSize,
+		TotalBytes:    fileSize,
+		RwBytes:       fileSize,
+		EventType:     helper_progress.TransferCompletedEvent,
+	})
 	return nil
 }
 func (d *Instance) genParts(fileSize int64) (parts []*part, err error) {

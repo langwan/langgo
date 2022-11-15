@@ -96,7 +96,6 @@ func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, 
 		if part.isCompleted {
 			completedCount++
 		}
-		fileSize += part.size
 	}
 
 	partCount := len(parts)

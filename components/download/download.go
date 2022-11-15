@@ -102,7 +102,12 @@ func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, 
 	partCount := len(parts)
 	completed := make(chan *part, partCount)
 	failed := make(chan error)
-
+	listener.ProgressChanged(&helper_progress.ProgressEvent{
+		ConsumedBytes: 0,
+		TotalBytes:    fileSize,
+		RwBytes:       0,
+		EventType:     helper_progress.TransferStartedEvent,
+	})
 	for _, part := range parts {
 		if !part.isCompleted {
 			pool.Invoke(&invokeParams{

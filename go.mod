@@ -21,7 +21,10 @@ require (
 	gorm.io/gorm v1.24.0
 )
 
-require google.golang.org/protobuf v1.28.1 // indirect
+require (
+	github.com/robfig/cron/v3 v3.0.1 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
+)
 
 require (
 	github.com/aquilax/truncate v1.0.0

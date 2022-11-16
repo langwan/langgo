@@ -18,15 +18,24 @@ func (j MyJob) Run() {
 func TestCron(t *testing.T) {
 	langgo.Run(&Instance{})
 	wait := make(chan struct{})
-	j := MyJob{"one"}
-	AddJob("one", j)
+
+	AddJob(&Job{
+		Name:        "one",
+		Description: "one description",
+		Id:          0,
+		Job:         MyJob{Name: "one"},
+	})
 	Load(Schedule{
 		Name: "one",
 		Spec: "* * * * *",
 	})
 
-	j2 := MyJob{"two"}
-	AddJob("two", j2)
+	AddJob(&Job{
+		Name:        "two",
+		Description: "two description",
+		Id:          0,
+		Job:         MyJob{Name: "two"},
+	})
 	Load(Schedule{
 		Name: "two",
 		Spec: "*/2 * * * *",
@@ -45,5 +54,25 @@ func TestCron(t *testing.T) {
 		t.Log(entry)
 	}
 
+	<-wait
+}
+
+type MyRecoverJob struct {
+	Name string
+}
+
+func (j MyRecoverJob) Run() {
+	panic("MyRecoverJob")
+}
+
+func TestRecover(t *testing.T) {
+	langgo.Run(&Instance{})
+	wait := make(chan struct{})
+	AddJobAndSchedule(&Schedule{
+		Name: "MyRecoverJob",
+		Spec: "* * * * *",
+	}, MyRecoverJob{
+		Name: "MyRecoverJob",
+	})
 	<-wait
 }

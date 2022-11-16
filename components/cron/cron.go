@@ -25,7 +25,8 @@ var instance *Instance
 
 func (i *Instance) Run() error {
 	instance = i
-	c = rcron.New()
+	l := Logger{}
+	c = rcron.New(rcron.WithChain(rcron.Recover(&l)), rcron.WithLogger(&l))
 	c.Start()
 	return nil
 }
@@ -89,7 +90,7 @@ func UpdateSchedule(schedule *Schedule) error {
 }
 
 func AddSchedule(schedule *Schedule) error {
-	if job, ok := jobs[name]; ok {
+	if job, ok := jobs[schedule.Name]; ok {
 		var err error
 		job.Id, err = c.AddJob(schedule.Spec, job.Job)
 		if err != nil {

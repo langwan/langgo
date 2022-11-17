@@ -181,4 +181,4 @@ entryId, _ := cron.Get().RemoveTask("my job 1")
 
 ```
 
-通过 RemoveTask() 方法移除已经存在的cron
+通过 RemoveTask() 方法移除已经存在的cron。

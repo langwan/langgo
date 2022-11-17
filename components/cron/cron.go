@@ -2,54 +2,63 @@ package cron
 
 import (
 	"errors"
+	"fmt"
 	rcron "github.com/robfig/cron/v3"
 )
 
-var c *rcron.Cron
-
-var jobs = make(map[string]*Job)
-
-type Job struct {
-	Name        string        `json:"name"`
-	Description string        `json:"description"`
-	Id          rcron.EntryID `json:"id"`
-	Job         rcron.Job     `json:"job"`
+type Task struct {
+	Name string        `json:"name"`
+	Id   rcron.EntryID `json:"id"`
+	Job  rcron.Job     `json:"job"`
 }
 
 type Instance struct {
+	tasks       map[string]*Task
+	cron        *rcron.Cron
+	WithSeconds bool `json:"with_seconds"`
 }
 
-const name = "cron"
+const moduleName = "cron"
 
 var instance *Instance
 
 func (i *Instance) Run() error {
 	instance = i
 	l := Logger{}
-	c = rcron.New(rcron.WithChain(rcron.Recover(&l)), rcron.WithLogger(&l))
-	c.Start()
+	var opts []rcron.Option
+	opts = append(opts, rcron.WithChain(rcron.Recover(&l)), rcron.WithLogger(&l))
+	if i.WithSeconds {
+		opts = append(opts, rcron.WithSeconds())
+	}
+	i.cron = rcron.New(opts...)
+	i.tasks = make(map[string]*Task)
+	i.cron.Start()
 	return nil
 }
 
 func (i *Instance) GetName() string {
-	return name
+	return moduleName
 }
 
-func Get() *rcron.Cron {
-	return c
+func Get() *Instance {
+	return instance
+}
+
+func GetCron() *rcron.Cron {
+	return instance.cron
 }
 
 type Schedule struct {
-	Name string `json:"name"`
+	Name string `json:"moduleName"`
 	Spec string `json:"spec"`
 }
 
-func Load(schedules ...Schedule) (errMap map[string]error) {
+func (i *Instance) Load(schedules ...Schedule) (errMap map[string]error) {
 	errMap = make(map[string]error)
 	for _, schedule := range schedules {
-		if job, ok := jobs[schedule.Name]; ok {
+		if job, ok := instance.tasks[schedule.Name]; ok {
 			var err error
-			job.Id, err = c.AddJob(schedule.Spec, job.Job)
+			job.Id, err = instance.cron.AddJob(schedule.Spec, job.Job)
 			if err != nil {
 				errMap[schedule.Name] = err
 			}
@@ -58,46 +67,62 @@ func Load(schedules ...Schedule) (errMap map[string]error) {
 	return errMap
 }
 
-func AddJobAndSchedule(schedule *Schedule, job rcron.Job) error {
-	if _, ok := jobs[schedule.Name]; ok {
-		return errors.New("job exists")
+func (i *Instance) BindTask(name string, job rcron.Job) error {
+	if _, ok := instance.tasks[name]; ok {
+		return errors.New(fmt.Sprintf("job %s exists", name))
 	}
-	jobs[schedule.Name] = &Job{
-		Id:  0,
-		Job: job,
-	}
-	return AddSchedule(schedule)
-}
-
-func AddJob(job *Job) error {
-	if _, ok := jobs[job.Name]; ok {
-		return errors.New("job exists")
-	}
-	jobs[job.Name] = job
-	return nil
-}
-
-func UpdateSchedule(schedule *Schedule) error {
-	if job, ok := jobs[schedule.Name]; ok {
-		c.Remove(job.Id)
-		var err error
-		job.Id, err = c.AddJob(schedule.Spec, job.Job)
-		return err
-	} else {
-		return errors.New("job exists")
+	instance.tasks[name] = &Task{
+		Name: name,
+		Job:  job,
 	}
 	return nil
 }
 
-func AddSchedule(schedule *Schedule) error {
-	if job, ok := jobs[schedule.Name]; ok {
+func (i *Instance) RemoveTask(name string) {
+	if job, ok := instance.tasks[name]; ok {
+		if job.Id != 0 {
+			instance.cron.Remove(job.Id)
+		}
+		delete(instance.tasks, moduleName)
+	}
+}
+
+func (i *Instance) BindSchedule(name, spec string) error {
+	if job, ok := instance.tasks[name]; ok {
 		var err error
-		job.Id, err = c.AddJob(schedule.Spec, job.Job)
+		job.Id, err = instance.cron.AddJob(spec, job.Job)
 		if err != nil {
 			return err
 		}
 		return nil
 	} else {
-		return errors.New("job not exists")
+		return errors.New(fmt.Sprintf("job %s not exists", name))
 	}
+}
+
+func (i *Instance) UpdateSchedule(name, spec string) (rcron.EntryID, error) {
+	if job, ok := instance.tasks[name]; ok {
+		if job.Id != 0 {
+			instance.cron.Remove(job.Id)
+		}
+		var err error
+		job.Id, err = instance.cron.AddJob(spec, job.Job)
+		return job.Id, err
+	} else {
+		return job.Id, errors.New(fmt.Sprintf("job %s not exists", name))
+	}
+}
+
+func (i *Instance) BindTaskAndSchedule(name, spec string, job rcron.Job) error {
+	if _, ok := instance.tasks[name]; ok {
+		return errors.New(fmt.Sprintf("job %s exists", name))
+	}
+	instance.tasks[name] = &Task{
+		Job: job,
+	}
+	return i.BindSchedule(name, spec)
+}
+
+func (i *Instance) Tasks() map[string]*Task {
+	return instance.tasks
 }

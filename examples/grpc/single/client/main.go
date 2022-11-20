@@ -20,7 +20,8 @@ func main() {
 
 	ServerClient := pb.NewServerClient(conn)
 
-	helloResponse, err := ServerClient.Hello(context.Background(), &pb.HelloRequest{From: "client"})
+	helloResponse, err := ServerClient.Hello(context.Background(), &pb.Empty{})
+
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		return

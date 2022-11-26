@@ -4,6 +4,8 @@ Langgo是一款go语言开发后端和其它应用的多用途框架。
 
 这里可以查看 [全部文档](https://langwan.github.io/langgo)
 
+![](./logo.png)
+
 安装langgo
 
 ```

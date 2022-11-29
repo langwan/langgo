@@ -19,9 +19,9 @@ var pool *ants.PoolWithFunc
 
 type Instance struct {
 	Workers  int    `yaml:"workers"`
-	PartSize string `yaml:"partSize"`
+	PartSize string `yaml:"part_size"`
 	partSize int64
-	BufSize  string `yaml:"bufSize"`
+	BufSize  string `yaml:"buf_size"`
 	bufSize  int64
 }
 

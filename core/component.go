@@ -1,5 +1,9 @@
 package core
 
+import (
+	"gopkg.in/yaml.v3"
+)
+
 type Component interface {
 	Run() error
 	GetName() string
@@ -26,4 +30,13 @@ func RunComponents(instances ...Component) {
 		components[c.GetName()] = c
 		c.Run()
 	}
+}
+
+func LoadComponentFromYaml(c Component, content []byte) error {
+	err := yaml.Unmarshal(content, c)
+	if err != nil {
+		return err
+	}
+	c.Run()
+	return nil
 }

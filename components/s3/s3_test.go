@@ -14,10 +14,10 @@ func Test_CreateFolder(t *testing.T) {
 	})
 
 	s3client, err := Get().NewClient(&Client{
-		Endpoint:        "https://oss-cn-hangzhou.aliyuncs.com",
-		AccessKeyId:     "LTAI5tJvXm5zvZ8Ad61tKKG9",
-		AccessKeySecret: "iR0d83zS5IG6g4jEIwOIZZnzrgdDHP",
-		BucketName:      "banyun-files",
+		Endpoint:        "",
+		AccessKeyId:     "",
+		AccessKeySecret: "",
+		BucketName:      "",
 		Domain:          "",
 		Region:          "oss-cn-hangzhou",
 	})
@@ -35,10 +35,10 @@ func Test_List(t *testing.T) {
 	})
 
 	s3client, err := Get().NewClient(&Client{
-		Endpoint:        "https://oss-cn-hangzhou.aliyuncs.com",
-		AccessKeyId:     "LTAI5tJvXm5zvZ8Ad61tKKG9",
-		AccessKeySecret: "iR0d83zS5IG6g4jEIwOIZZnzrgdDHP",
-		BucketName:      "banyun-files",
+		Endpoint:        "",
+		AccessKeyId:     "",
+		AccessKeySecret: "",
+		BucketName:      "",
 		Domain:          "",
 		Region:          "oss-cn-hangzhou",
 	})

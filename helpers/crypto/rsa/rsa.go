@@ -62,6 +62,16 @@ func PrivateKeyFromX509PKCS1(pri string) (*rsa.PrivateKey, error) {
 	return x509.ParsePKCS1PrivateKey(data)
 }
 
+func PrivateKeyToPKCS1(pri *rsa.PrivateKey) string {
+	bytePri := x509.MarshalPKCS1PrivateKey(pri)
+	return base64.StdEncoding.EncodeToString(bytePri)
+}
+
+func PublicKeyToPKCS1(pub *rsa.PublicKey) string {
+	bytePub := x509.MarshalPKCS1PublicKey(pub)
+	return base64.StdEncoding.EncodeToString(bytePub)
+}
+
 func PublicKeyFromX509PKCS1(pub string) (*rsa.PublicKey, error) {
 	data, err := base64.StdEncoding.DecodeString(pub)
 	if err != nil {

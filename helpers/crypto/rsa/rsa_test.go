@@ -1,6 +1,8 @@
 package helper_rsa
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -38,4 +40,52 @@ func TestSign(t *testing.T) {
 	}
 	err = Verify(pub, sign, []byte(data))
 	assert.NoError(t, err)
+}
+
+func TestPublicKeyToPKCS1(t *testing.T) {
+	privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
+	publicKey := &privateKey.PublicKey
+	type args struct {
+		pub *rsa.PublicKey
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "",
+			args: args{
+				pub: publicKey,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.NotEmpty(t, PublicKeyToPKCS1(tt.args.pub), "PublicKeyToPKCS1(%v)", tt.args.pub)
+		})
+	}
+}
+
+func TestPrivateKeyToPKCS1(t *testing.T) {
+	privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
+
+	type args struct {
+		pri *rsa.PrivateKey
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "",
+			args: args{
+				pri: privateKey,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.NotEmpty(t, PrivateKeyToPKCS1(tt.args.pri), "PrivateKeyToPKCS1(%v)", tt.args.pri)
+		})
+	}
 }

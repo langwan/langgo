@@ -24,7 +24,7 @@ type PartList interface {
 	Load() ([]*Part, error)
 	SetList(parts []*Part)
 	GetList() []*Part
-	Save() error
+	SavePart(part *Part) error
 	GetUploadId() string
 	SetUploadId(uploadId string) error
 }
@@ -127,7 +127,7 @@ func (up *Upload) Upload(ctx context.Context, src string, dst string, partList P
 		case rp := <-chCompleted:
 			completedCount++
 			rp.IsCompleted = true
-			partList.Save()
+			partList.SavePart(rp)
 			wm += rp.Size
 			listener.ProgressChanged(&helper_progress.ProgressEvent{
 				ConsumedBytes: wm,

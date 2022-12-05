@@ -27,7 +27,7 @@ func (m *MyPartList) GetList() []*Part {
 	return m.parts
 }
 
-func (m *MyPartList) Save() error {
+func (m *MyPartList) SavePart(part *Part) error {
 	return nil
 }
 

@@ -21,7 +21,7 @@ type part struct {
 }
 
 type PartList interface {
-	LoadList() ([]*part, error)
+	Load() ([]*part, error)
 	SetList(parts []*part)
 	GetList() []*part
 	Save() error

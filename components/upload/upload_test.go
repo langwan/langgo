@@ -15,7 +15,7 @@ type MyPartList struct {
 	parts    []*part
 }
 
-func (m *MyPartList) LoadList() ([]*part, error) {
+func (m *MyPartList) Load() ([]*part, error) {
 	return nil, nil
 }
 

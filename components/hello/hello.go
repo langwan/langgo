@@ -8,11 +8,6 @@ const name = "hello"
 
 var instance *Instance
 
-//func (i *Instance) Load() error {
-//	core.GetComponentConfiguration(name, i)
-//	return i.Run()
-//}
-
 func (i *Instance) Run() error {
 	instance = i
 	return nil
@@ -20,10 +15,6 @@ func (i *Instance) Run() error {
 
 func (i *Instance) GetName() string {
 	return name
-}
-
-func GetInstance() *Instance {
-	return instance
 }
 
 func Get() *Instance {

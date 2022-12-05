@@ -12,18 +12,18 @@ import (
 
 type MyPartList struct {
 	uploadId string
-	parts    []*part
+	parts    []*Part
 }
 
-func (m *MyPartList) Load() ([]*part, error) {
+func (m *MyPartList) Load() ([]*Part, error) {
 	return nil, nil
 }
 
-func (m *MyPartList) SetList(parts []*part) {
+func (m *MyPartList) SetList(parts []*Part) {
 	m.parts = parts
 }
 
-func (m *MyPartList) GetList() []*part {
+func (m *MyPartList) GetList() []*Part {
 	return m.parts
 }
 

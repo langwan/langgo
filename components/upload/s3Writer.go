@@ -27,12 +27,12 @@ func (w *S3Writer) UploadPart(key string, uploadId string, partId int64, data []
 	return *output.ETag, nil
 }
 
-func (w *S3Writer) Completed(key string, uploadId string, parts []*part) error {
+func (w *S3Writer) Completed(key string, uploadId string, parts []*Part) error {
 	var s3Parts []*s3.CompletedPart
 	for _, part := range parts {
 		s3Parts = append(s3Parts, &s3.CompletedPart{
-			ETag:       aws.String(part.etag),
-			PartNumber: aws.Int64(int64(part.id)),
+			ETag:       aws.String(part.ETag),
+			PartNumber: aws.Int64(int64(part.Id)),
 		})
 	}
 

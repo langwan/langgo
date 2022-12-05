@@ -12,18 +12,18 @@ import (
 	"os"
 )
 
-type part struct {
-	id          int    `json:"id"`
-	offset      int64  `json:"offset"`
-	size        int64  `json:"size"`
-	isCompleted bool   `json:"is_completed"`
-	etag        string `json:"etag"`
+type Part struct {
+	Id          int    `json:"Id"`
+	Offset      int64  `json:"Offset"`
+	Size        int64  `json:"Size"`
+	IsCompleted bool   `json:"is_completed"`
+	ETag        string `json:"etag"`
 }
 
 type PartList interface {
-	Load() ([]*part, error)
-	SetList(parts []*part)
-	GetList() []*part
+	Load() ([]*Part, error)
+	SetList(parts []*Part)
+	GetList() []*Part
 	Save() error
 	GetUploadId() string
 	SetUploadId(uploadId string) error
@@ -31,10 +31,10 @@ type PartList interface {
 
 type invokeParams struct {
 	ctx       context.Context
-	completed chan *part
+	completed chan *Part
 	failed    chan error
 	dst       string
-	part      *part
+	part      *Part
 	listener  helper_progress.ProgressListener
 	fileSize  int64
 	uploadId  string
@@ -45,7 +45,7 @@ type invokeParams struct {
 type Writer interface {
 	Create(key string) (string, error)
 	UploadPart(key string, uploadId string, partId int64, data []byte) (string, error)
-	Completed(key string, uploadId string, parts []*part) error
+	Completed(key string, uploadId string, parts []*Part) error
 }
 
 type Upload struct {
@@ -58,10 +58,10 @@ var pool *ants.PoolWithFunc
 func (up *Upload) Init() {
 	pool, _ = ants.NewPoolWithFunc(up.Workers, func(i interface{}) {
 		params := i.(*invokeParams)
-		buf := make([]byte, params.part.size)
-		params.srcFile.ReadAt(buf, params.part.offset)
+		buf := make([]byte, params.part.Size)
+		params.srcFile.ReadAt(buf, params.part.Offset)
 		var err error
-		params.part.etag, err = params.writer.UploadPart(params.dst, params.uploadId, int64(params.part.id), buf)
+		params.part.ETag, err = params.writer.UploadPart(params.dst, params.uploadId, int64(params.part.Id), buf)
 		if err != nil {
 			params.failed <- err
 			return
@@ -102,11 +102,11 @@ func (up *Upload) Upload(ctx context.Context, src string, dst string, partList P
 	}
 	parts := partList.GetList()
 	partCount := len(parts)
-	chCompleted := make(chan *part, partCount)
+	chCompleted := make(chan *Part, partCount)
 	chFailed := make(chan error)
 	completedCount := 0
 	for _, part := range parts {
-		if !part.isCompleted {
+		if !part.IsCompleted {
 			pool.Invoke(&invokeParams{
 				ctx:       ctx,
 				completed: chCompleted,
@@ -126,9 +126,9 @@ func (up *Upload) Upload(ctx context.Context, src string, dst string, partList P
 		select {
 		case rp := <-chCompleted:
 			completedCount++
-			rp.isCompleted = true
+			rp.IsCompleted = true
 			partList.Save()
-			wm += rp.size
+			wm += rp.Size
 			listener.ProgressChanged(&helper_progress.ProgressEvent{
 				ConsumedBytes: wm,
 				TotalBytes:    fi.Stat.Size(),
@@ -147,22 +147,22 @@ func (up *Upload) Upload(ctx context.Context, src string, dst string, partList P
 	return nil
 }
 
-func genParts(fileSize int64, partSize int64) (parts []*part, err error) {
+func genParts(fileSize int64, partSize int64) (parts []*Part, err error) {
 	count := int(math.Ceil(float64(fileSize) / float64(partSize)))
 	var offset int64 = 0
 	remain := fileSize
-	parts = make([]*part, count)
+	parts = make([]*Part, count)
 	for i := 0; i < count; i++ {
 		ps := partSize
 		if remain < partSize {
 			ps = remain
 		}
 		remain -= partSize
-		parts[i] = &part{
-			id:          i + 1,
-			offset:      offset,
-			size:        ps,
-			isCompleted: false,
+		parts[i] = &Part{
+			Id:          i + 1,
+			Offset:      offset,
+			Size:        ps,
+			IsCompleted: false,
 		}
 		offset += partSize
 	}

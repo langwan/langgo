@@ -6,3 +6,4 @@ logs
 *.pb.go
 sourcetreeconfig
 site/resources/_gen
+testdata/samples

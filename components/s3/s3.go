@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"bytes"
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -80,15 +81,13 @@ func (c *Client) CreateFolder(key string) (err error) {
 
 func (c *Client) Download(key string, offset, size int64) (io.ReadCloser, error) {
 	ctx := context.Background()
-	var cancelFn func()
+
 	if instance.DownloadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.DownloadTimeout)
+		ctx, _ = context.WithTimeout(ctx, instance.DownloadTimeout)
 	}
-	if cancelFn != nil {
-		defer cancelFn()
-	}
-	k := folderName(key)
-	res, err := c.s3.GetObjectWithContext(ctx, &s3.GetObjectInput{Bucket: aws.String(c.BucketName), Key: aws.String(k), Range: aws.String(helper_http.GenRange(offset, size))})
+
+	//k := folderName(key)
+	res, err := c.s3.GetObjectWithContext(ctx, &s3.GetObjectInput{Bucket: aws.String(c.BucketName), Key: aws.String(key), Range: aws.String(helper_http.GenRange(offset, size))})
 	return res.Body, err
 }
 
@@ -171,6 +170,56 @@ func (c *Client) HeadObject(key string) (*s3.HeadObjectOutput, error) {
 	return c.s3.HeadObjectWithContext(ctx, &s3.HeadObjectInput{
 		Bucket: aws.String(c.BucketName),
 		Key:    aws.String(key),
+	})
+}
+
+func (c *Client) CreateMultipartUpload(key string) (resp *s3.CreateMultipartUploadOutput, err error) {
+	ctx := context.Background()
+	var cancelFn func()
+	if instance.ReadTimeout > 0 {
+		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+	}
+	if cancelFn != nil {
+		defer cancelFn()
+	}
+	return c.s3.CreateMultipartUploadWithContext(ctx, &s3.CreateMultipartUploadInput{Bucket: aws.String(c.BucketName), Key: aws.String(key)})
+}
+
+func (c *Client) UploadPart(uploadId string, body []byte, key string, partNumber int64) (resp *s3.UploadPartOutput, err error) {
+	ctx := context.Background()
+	var cancelFn func()
+	if instance.ReadTimeout > 0 {
+		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+	}
+	if cancelFn != nil {
+		defer cancelFn()
+	}
+	return c.s3.UploadPartWithContext(ctx, &s3.UploadPartInput{
+		Bucket:     aws.String(c.BucketName),
+		Key:        aws.String(key),
+		PartNumber: aws.Int64(partNumber),
+		UploadId:   aws.String(uploadId),
+		Body:       bytes.NewReader(body),
+	})
+}
+
+func (c *Client) CompletedMultipartUpload(uploadId string, key string, completedParts []*s3.CompletedPart) (resp *s3.CompleteMultipartUploadOutput, err error) {
+	ctx := context.Background()
+	var cancelFn func()
+	if instance.ReadTimeout > 0 {
+		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+	}
+	if cancelFn != nil {
+		defer cancelFn()
+	}
+	return c.s3.CompleteMultipartUploadWithContext(ctx, &s3.CompleteMultipartUploadInput{
+		Bucket: aws.String(c.BucketName),
+		Key:    aws.String(key),
+
+		UploadId: aws.String(uploadId),
+		MultipartUpload: &s3.CompletedMultipartUpload{
+			Parts: completedParts,
+		},
 	})
 }
 

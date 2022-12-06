@@ -11,10 +11,15 @@ func TestInstance_Load(t *testing.T) {
 	core.EnvName = core.Development
 	core.LoadConfigurationFile("../../testdata/configuration_test.app.yml")
 	langgo.Run(&Instance{})
+	core.LoadComponents()
 	assert.Equal(t, Get().Message, "hello")
 }
 
 func TestInstance_Run(t *testing.T) {
 	langgo.Run(&Instance{Message: "hello"})
 	assert.Equal(t, Get().Message, "hello")
+}
+
+func Test_NewFromYaml(t *testing.T) {
+
 }

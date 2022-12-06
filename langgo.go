@@ -34,8 +34,6 @@ func Init() {
 			log.Logger("langgo", "run").Warn().Err(err).Msg("load env file")
 		}
 		confName = os.Getenv("langgo_configuration_name")
-	} else {
-		log.Logger("langgo", "run").Warn().Msg("env file not find")
 	}
 
 	l := log.Instance{}

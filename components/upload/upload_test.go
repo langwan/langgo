@@ -15,6 +15,10 @@ type MyPartList struct {
 	parts    []*Part
 }
 
+func (m *MyPartList) RomoveParts() error {
+	return nil
+}
+
 func (m *MyPartList) Load() ([]*Part, error) {
 	return nil, nil
 }

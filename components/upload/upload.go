@@ -27,6 +27,7 @@ type PartList interface {
 	SavePart(part *Part) error
 	GetUploadId() string
 	SetUploadId(uploadId string) error
+	RomoveParts() error
 }
 
 type invokeParams struct {

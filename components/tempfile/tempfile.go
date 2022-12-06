@@ -1,7 +1,7 @@
 package tempfile
 
 import (
-	helper_gen "github.com/langwan/langgo/helpers/gen"
+	"github.com/langwan/langgo/helpers/gen"
 	"os"
 	"path/filepath"
 )
@@ -10,12 +10,7 @@ type TempFile struct {
 	Base string `yaml:"base"`
 }
 
-func (tf TempFile) CreateFile(name string, data []byte, perm os.FileMode) error {
-	p := filepath.Join(tf.Base, name)
-	return os.WriteFile(p, data, perm)
-}
-
-func (tf TempFile) CreateTempFile(data []byte, perm os.FileMode) (string, error) {
+func (tf TempFile) CreateFile(data []byte, perm os.FileMode) (string, error) {
 	p := filepath.Join(tf.Base, helper_gen.UuidNoSeparator())
 	return p, os.WriteFile(p, data, perm)
 }

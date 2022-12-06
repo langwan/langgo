@@ -5,6 +5,6 @@ import (
 	"server/pb"
 )
 
-func (s Server) Hello(ctx context.Context, request *pb.Empty) (*pb.HelloResponse, error) {
+func (s Server) Hello(ctx context.Context, request *pb.HelloRequest) (*pb.HelloResponse, error) {
 	return &pb.HelloResponse{Msg: "hello"}, nil
 }

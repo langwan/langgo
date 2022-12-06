@@ -1,8 +1,6 @@
-#!/bin/bash
 echo "生成 rpc 代码"
 
 CLIENT_OUT=../client/pb
-mkdir -p ${CLIENT_OUT}
 protoc \
 --go_out=${CLIENT_OUT} \
 --go-grpc_out=${CLIENT_OUT} \
@@ -10,7 +8,6 @@ protoc \
 server.proto
 
 SERVER_OUT=../server/pb
-mkdir -p ${SERVER_OUT}
 protoc \
 --go_out=${SERVER_OUT} \
 --go-grpc_out=${SERVER_OUT} \

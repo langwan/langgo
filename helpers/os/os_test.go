@@ -208,11 +208,45 @@ func TestNewFilename(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewFilename(tt.args.filename, tt.args.tries, tt.args.rule)
-			if !tt.wantErr(t, err, fmt.Sprintf("NewFilename(%v, %v)", tt.args.filename, tt.args.tries)) {
+			got, err := NewUniqueFilename(tt.args.filename, tt.args.tries, tt.args.rule)
+			if !tt.wantErr(t, err, fmt.Sprintf("NewUniqueFilename(%v, %v)", tt.args.filename, tt.args.tries)) {
 				return
 			}
-			assert.Equalf(t, tt.want, got, "NewFilename(%v, %v, %v)", tt.args.filename, tt.args.tries, tt.args.rule)
+			assert.Equalf(t, tt.want, got, "NewUniqueFilename(%v, %v, %v)", tt.args.filename, tt.args.tries, tt.args.rule)
+		})
+	}
+}
+
+func TestReadFileAt(t *testing.T) {
+	type args struct {
+		name string
+		off  int64
+		size int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantB   []byte
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "",
+			args: args{
+				name: "",
+				off:  0,
+				size: 0,
+			},
+			wantB:   nil,
+			wantErr: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotB, err := ReadFileAt(tt.args.name, tt.args.off, tt.args.size)
+			if !tt.wantErr(t, err, fmt.Sprintf("ReadFileAt(%v, %v, %v)", tt.args.name, tt.args.off, tt.args.size)) {
+				return
+			}
+			assert.Equalf(t, tt.wantB, gotB, "ReadFileAt(%v, %v, %v)", tt.args.name, tt.args.off, tt.args.size)
 		})
 	}
 }

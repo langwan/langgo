@@ -318,9 +318,9 @@ func FileNameWithoutExt(filename string) string {
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
-// NewFilename filename exists return new name
+// NewUniqueFilename filename exists return new name
 // rule custom name rule
-func NewFilename(filename string, tries int, rule func(name string) string) (string, error) {
+func NewUniqueFilename(filename string, tries int, rule func(name string) string) (string, error) {
 	if !FileExists(filename) {
 		return filename, nil
 	}
@@ -346,4 +346,26 @@ func NewFilename(filename string, tries int, rule func(name string) string) (str
 		i++
 
 	}
+}
+
+// ReadFileAt reads bytes from the File starting at byte offset off.
+// It returns bytes and the error, if any.
+// ReadAt always returns a non-nil error when size != len(b).
+// At end of file, that error is io.EOF.
+func ReadFileAt(name string, off int64, size int) (b []byte, err error) {
+	file, err := os.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	buffer := make([]byte, size)
+	n, err := file.ReadAt(buffer, off)
+	if err != nil {
+		return nil, err
+	}
+	if n != size {
+		return nil, errors.New("buffer size != len")
+	}
+	return buffer, nil
 }

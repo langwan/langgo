@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 )
 
+// Encrypt encrypt data
 func Encrypt(key *rsa.PublicKey, src []byte) (data []byte, err error) {
 	h := sha256.New()
 	ciphertext, err := rsa.EncryptOAEP(h, rand.Reader, key, src, nil)
@@ -19,6 +20,7 @@ func Encrypt(key *rsa.PublicKey, src []byte) (data []byte, err error) {
 	return ciphertext, nil
 }
 
+// Decrypt decrypt data
 func Decrypt(key *rsa.PrivateKey, src []byte) (data []byte, err error) {
 	h := sha256.New()
 	oaep, err := rsa.DecryptOAEP(h, rand.Reader, key, src, nil)
@@ -28,6 +30,7 @@ func Decrypt(key *rsa.PrivateKey, src []byte) (data []byte, err error) {
 	return oaep, nil
 }
 
+// Sign sign data
 func Sign(key *rsa.PrivateKey, src []byte) (sign []byte, err error) {
 	h := crypto.SHA256
 	hn := h.New()
@@ -36,6 +39,7 @@ func Sign(key *rsa.PrivateKey, src []byte) (sign []byte, err error) {
 	return rsa.SignPSS(rand.Reader, key, h, sum, nil)
 }
 
+// Verify verify data
 func Verify(key *rsa.PublicKey, sign, src []byte) (err error) {
 	h := crypto.SHA256
 	hn := h.New()
@@ -44,6 +48,7 @@ func Verify(key *rsa.PublicKey, sign, src []byte) (err error) {
 	return rsa.VerifyPSS(key, h, sum, sign, nil)
 }
 
+// CreateKeyX509PKCS1 create rsa keys
 func CreateKeyX509PKCS1(bits int) (pub string, pri string) {
 	privateKey, _ := rsa.GenerateKey(rand.Reader, bits)
 	publicKey := &privateKey.PublicKey
@@ -54,6 +59,7 @@ func CreateKeyX509PKCS1(bits int) (pub string, pri string) {
 	return pub, pri
 }
 
+// PrivateKeyFromX509PKCS1 string private key to rsa.PrivateKey
 func PrivateKeyFromX509PKCS1(pri string) (*rsa.PrivateKey, error) {
 	data, err := base64.StdEncoding.DecodeString(pri)
 	if err != nil {
@@ -62,16 +68,19 @@ func PrivateKeyFromX509PKCS1(pri string) (*rsa.PrivateKey, error) {
 	return x509.ParsePKCS1PrivateKey(data)
 }
 
+// PrivateKeyToPKCS1 convert private key to a string
 func PrivateKeyToPKCS1(pri *rsa.PrivateKey) string {
 	bytePri := x509.MarshalPKCS1PrivateKey(pri)
 	return base64.StdEncoding.EncodeToString(bytePri)
 }
 
+// PublicKeyToPKCS1 convert public key to a string
 func PublicKeyToPKCS1(pub *rsa.PublicKey) string {
 	bytePub := x509.MarshalPKCS1PublicKey(pub)
 	return base64.StdEncoding.EncodeToString(bytePub)
 }
 
+// PublicKeyFromX509PKCS1 convert public key to a string
 func PublicKeyFromX509PKCS1(pub string) (*rsa.PublicKey, error) {
 	data, err := base64.StdEncoding.DecodeString(pub)
 	if err != nil {

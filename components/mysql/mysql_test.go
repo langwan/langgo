@@ -18,7 +18,7 @@ func TestInstance_Load(t *testing.T) {
 }
 
 func TestInstance_Run(t *testing.T) {
-	langgo.RunComponent(&Instance{Items: map[string]item{"main": {Dsn: "root:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local"}}})
+	langgo.LoadComponents(&Instance{Items: map[string]item{"main": {Dsn: "root:123456@tcp(localhost:3306)/simple?charset=utf8mb4&parseTime=True&loc=Local"}}})
 	var one int64
 	res := Main().Debug().Raw("SELECT 1").Scan(&one)
 	assert.Equal(t, res.RowsAffected, int64(1))

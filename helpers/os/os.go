@@ -318,9 +318,9 @@ func FileNameWithoutExt(filename string) string {
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
-// NewUniqueFilename filename exists return new name
+// GenUniqueFilename filename exists return new name
 // rule custom name rule
-func NewUniqueFilename(filename string, tries int, rule func(name string) string) (string, error) {
+func GenUniqueFilename(filename string, tries int, rule func(name string) string) (string, error) {
 	if !FileExists(filename) {
 		return filename, nil
 	}

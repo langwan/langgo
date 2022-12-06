@@ -208,11 +208,11 @@ func TestNewFilename(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewUniqueFilename(tt.args.filename, tt.args.tries, tt.args.rule)
-			if !tt.wantErr(t, err, fmt.Sprintf("NewUniqueFilename(%v, %v)", tt.args.filename, tt.args.tries)) {
+			got, err := GenUniqueFilename(tt.args.filename, tt.args.tries, tt.args.rule)
+			if !tt.wantErr(t, err, fmt.Sprintf("GenUniqueFilename(%v, %v)", tt.args.filename, tt.args.tries)) {
 				return
 			}
-			assert.Equalf(t, tt.want, got, "NewUniqueFilename(%v, %v, %v)", tt.args.filename, tt.args.tries, tt.args.rule)
+			assert.Equalf(t, tt.want, got, "GenUniqueFilename(%v, %v, %v)", tt.args.filename, tt.args.tries, tt.args.rule)
 		})
 	}
 }

@@ -11,8 +11,9 @@ type TempFile struct {
 }
 
 func (tf TempFile) CreateFile(data []byte, perm os.FileMode) (string, error) {
-	p := filepath.Join(tf.Base, helper_gen.UuidNoSeparator())
-	return p, os.WriteFile(p, data, perm)
+	filename := helper_gen.UuidNoSeparator()
+	p := filepath.Join(tf.Base, filename)
+	return filename, os.WriteFile(p, data, perm)
 }
 
 func (tf TempFile) ReadFile(name string, remove bool) ([]byte, error) {

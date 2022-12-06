@@ -5,6 +5,7 @@ import (
 	"github.com/langwan/langgo/core"
 	"github.com/langwan/langgo/core/log"
 	"github.com/langwan/langgo/helpers/os"
+	"github.com/rs/zerolog"
 	"os"
 	"path/filepath"
 )
@@ -54,4 +55,8 @@ func Run(instances ...core.Component) {
 
 func LoadComponents(instances ...core.Component) {
 	core.LoadComponents(instances...)
+}
+
+func Logger(name string, tag string) *zerolog.Logger {
+	return log.Logger(name, tag)
 }

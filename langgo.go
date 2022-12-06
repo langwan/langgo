@@ -39,15 +39,19 @@ func Init() {
 	l := log.Instance{}
 
 	confPath := filepath.Join(core.WorkerDir, confName+".yml")
-	err := core.LoadConfigurationFile(confPath)
-	if err != nil {
-		log.Logger("langgo", "run").Warn().Str("path", confPath).Msg("load app config failed.")
-	}
+	core.LoadConfigurationFile(confPath)
+	//if err != nil {
+	//	log.Logger("langgo", "run").Warn().Str("path", confPath).Msg("load app config failed.")
+	//}
 
 	l.Load()
 }
 
 func Run(instances ...core.Component) {
 	Init()
+	core.LoadComponents(instances...)
+}
+
+func LoadComponents(instances ...core.Component) {
 	core.LoadComponents(instances...)
 }

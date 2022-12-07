@@ -52,7 +52,7 @@ func (i *Instance) GetName() string {
 }
 
 func Logger(name string, tag string) *zerolog.Logger {
-	rp := filepath.Join(core.WorkerDir, "logs")
+	rp := filepath.Join(core.WorkDir, "logs")
 
 	if _, ok := loggers[name]; !ok {
 		func() {

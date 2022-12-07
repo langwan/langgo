@@ -163,7 +163,7 @@ func dbPath(dst string) string {
 func merge(dst string, parts []*part, fileSize int64, listener helper_progress.ProgressListener) error {
 	dstDir := filepath.Dir(dst)
 	dstBase := filepath.Base(dst)
-	newFilename, err := helper_os.NewFilename(dst, 10, nil)
+	newFilename, err := helper_os.GenUniqueFilename(dst, 10, nil)
 	if err != nil {
 		return err
 	}

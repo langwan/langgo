@@ -1,6 +1,6 @@
 package core
 
-var WorkerDir string
+var WorkDir string
 var EnvName string
 
 const (

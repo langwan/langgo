@@ -17,16 +17,16 @@ func Init() {
 		core.EnvName = core.Development
 	}
 
-	if core.WorkerDir == "" {
-		core.WorkerDir = os.Getenv("langgo_worker_dir")
+	if core.WorkDir == "" {
+		core.WorkDir = os.Getenv("langgo_worker_dir")
 	}
 
-	if core.WorkerDir == "" {
-		core.WorkerDir, _ = os.Getwd()
-		os.Setenv("langgo_worker_dir", core.WorkerDir)
+	if core.WorkDir == "" {
+		core.WorkDir, _ = os.Getwd()
+		os.Setenv("langgo_worker_dir", core.WorkDir)
 	}
 
-	envPath := filepath.Join(core.WorkerDir, ".env."+core.EnvName+".yml")
+	envPath := filepath.Join(core.WorkDir, ".env."+core.EnvName+".yml")
 	confName := "app"
 
 	if helper_os.FileExists(envPath) {
@@ -39,7 +39,7 @@ func Init() {
 
 	l := log.Instance{}
 
-	confPath := filepath.Join(core.WorkerDir, confName+".yml")
+	confPath := filepath.Join(core.WorkDir, confName+".yml")
 	core.LoadConfigurationFile(confPath)
 	//if err != nil {
 	//	log.Logger("langgo", "run").Warn().Str("path", confPath).Msg("load app config failed.")
@@ -59,4 +59,8 @@ func LoadComponents(instances ...core.Component) {
 
 func Logger(name string, tag string) *zerolog.Logger {
 	return log.Logger(name, tag)
+}
+
+func SetWorkDir(p string) {
+	core.WorkDir = p
 }

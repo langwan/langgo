@@ -48,6 +48,14 @@ func Get() *Instance {
 	return instance
 }
 
+func Download(ctx context.Context, dst string, reader FileReader, listener helper_progress.ProgressListener) (err error) {
+	return Get().Download(ctx, dst, reader, listener)
+}
+
+func Tune(size int) {
+	Get().Tune(size)
+}
+
 const (
 	suffixDb = ".db"
 	suffixDp = ".dp"

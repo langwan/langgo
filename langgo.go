@@ -64,3 +64,6 @@ func Logger(name string, tag string) *zerolog.Logger {
 func SetWorkDir(p string) {
 	core.WorkDir = p
 }
+func GetWorkDir() string {
+	return core.WorkDir
+}

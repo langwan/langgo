@@ -3,9 +3,9 @@ package ffmpeg
 import "time"
 
 type Instance struct {
-	FFMpeg         string        `json:"ffmpeg"`
-	FFProbe        string        `json:"ffprobe"`
-	CommandTimeout time.Duration `json:"command_timeout"`
+	FFMpeg         string        `yaml:"ffmpeg"`
+	FFProbe        string        `yaml:"ffprobe"`
+	CommandTimeout time.Duration `yaml:"command_timeout"`
 	bind           *Bind
 }
 

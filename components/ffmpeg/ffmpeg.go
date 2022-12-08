@@ -12,9 +12,9 @@ import (
 )
 
 type Bind struct {
-	FFMpeg         string        `yaml:"ffmpeg"`
-	FFProbe        string        `yaml:"ffprobe"`
-	CommandTimeout time.Duration `yaml:"command_timeout"`
+	FFMpeg         string        `json:"ffmpeg" yaml:"ffmpeg"`
+	FFProbe        string        `json:"ffprobe" yaml:"ffprobe"`
+	CommandTimeout time.Duration `json:"command_timeout" yaml:"command_timeout"`
 }
 
 // Transcoding h264 mp4 format file, overwrite is true, overwrite an existing file

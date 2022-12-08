@@ -67,3 +67,11 @@ func SetWorkDir(p string) {
 func GetWorkDir() string {
 	return core.WorkDir
 }
+
+func SignalHandlers(handler func(sig os.Signal), signals ...os.Signal) {
+	core.SignalHandlers(handler, signals...)
+}
+
+func SignalNotify() {
+	core.SignalNotify()
+}

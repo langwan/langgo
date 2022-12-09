@@ -3,31 +3,34 @@
 [![Run Tests](https://github.com/langwan/langgo/actions/workflows/go.yml/badge.svg)](https://github.com/langwan/langgo/actions/workflows/go.yml)
 ![Tag](https://img.shields.io/github/v/tag/langwan/langgo)
 
-Langgo 是 go 语言编写的轻量级框架。
+## What is Langgo?
+Langgo is a go lightweight framework.
 
-## 特性
-* 轻量级框架。
-* 组件和 helper 的合集
-* 支持后端、跨平台应用程序、个人软件开发。
-* 容易与其它框架共存。
+## Features
+* Lightweight framework.
+* Collection of components and helpers.
+* Support backend, cross-platform desktop, and personal software development.
+* Easy to work with other frameworks.
 
-这里可以查看 
+## Document
+
+[English Document](https://langwan.gitbook.io/langgo-v0.5.x/v/english)
 
 [中文文档](https://langwan.gitbook.io/langgo-v0.5.x/) 
 
-[English Documents](https://langwan.gitbook.io/langgo-v0.5.x/v/english)
-
 ![](./logo.png)
 
-所有的例子 [langgo-examples v0.5.x](https://github.com/langwan/langgo-examples/tree/main/0.5.x)
+## Examples
 
-安装langgo
+[langgo-examples v0.5.x](https://github.com/langwan/langgo-examples/tree/main/0.5.x)
+
+## Installation
 
 ```
 go get -u github.com/langwan/langgo
 ```
 
-快速开始
+## Quick Start
 
 ```go
 package main
@@ -35,14 +38,10 @@ package main
 import (
 	"github.com/langwan/langgo"
 	"github.com/langwan/langgo/components/hello"
-	"github.com/langwan/langgo/core/log"
 )
 
 func main() {
-	langgo.Run(&hello.Instance{Message: "hello"}})
-    langgo.Logger("app", "main").Info().Str("hello message", hello.Get().Message).Send()
+	langgo.Run(&hello.Instance{Message: "hello"})
+	fmt.Println(hello.Get().Message)
 }
 ```
-## 版本变迁
-
-当前版本为 v0.5.x 文档版本也是 v0.5.x

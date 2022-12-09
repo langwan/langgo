@@ -21,7 +21,7 @@ func TestInstance_Load(t *testing.T) {
 }
 
 func TestInstance_Run(t *testing.T) {
-	langgo.RunComponent(&Instance{Secret: "123456"})
+	langgo.LoadComponents(&Instance{Secret: "123456"})
 	payload := struct {
 		Name string
 	}{Name: "langwan"}

@@ -35,7 +35,7 @@ func TestInstance_Run(t *testing.T) {
 	dbPath := "../../testdata/sqlite_test.db"
 	os.Remove(dbPath)
 	defer os.Remove(dbPath)
-	langgo.RunComponent(&Instance{Path: dbPath})
+	langgo.LoadComponents(&Instance{Path: dbPath})
 	err := Get().AutoMigrate(&account{})
 	assert.NoError(t, err)
 	acc := account{Name: "langgo"}

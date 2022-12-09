@@ -1,4 +1,4 @@
-package s3
+package helper_s3
 
 import (
 	"bytes"
@@ -14,30 +14,28 @@ import (
 )
 
 type Client struct {
-	Endpoint        string
-	AccessKeyId     string
-	AccessKeySecret string
-	BucketName      string
-	Domain          string
-	Region          string
+	BucketName string
+
 	s3              *s3.S3
+	WriteTimeout    time.Duration
+	DownloadTimeout time.Duration
+	ReadTimeout     time.Duration
 }
 
-type Instance struct {
-	PutTimeout      time.Duration `yaml:"put_timeout"`
-	DownloadTimeout time.Duration `yaml:"download_timeout"`
-	ReadTimeout     time.Duration `yaml:"read_timeout"`
+type Option func(*Client)
+
+func WithTimeout(readTimeout, writeTimeout, downloadTimeout time.Duration) Option {
+	return func(client *Client) {
+		client.ReadTimeout = readTimeout
+		client.WriteTimeout = writeTimeout
+		client.DownloadTimeout = downloadTimeout
+	}
 }
 
-const name = "s3"
-
-var instance *Instance
-
-func (inst *Instance) NewClient(client *Client) (*Client, error) {
+func NewClient(endpoint, accessKeyId, accessKeySecret, bucketName, region string, options ...Option) (*Client, error) {
 	var err error
-	creds := credentials.NewStaticCredentials(client.AccessKeyId, client.AccessKeySecret, "")
-	region := client.Region
-	endpoint := client.Endpoint
+	creds := credentials.NewStaticCredentials(accessKeyId, accessKeySecret, "")
+
 	cfg := &aws.Config{
 		Region:           aws.String(region),
 		Endpoint:         &endpoint,
@@ -48,45 +46,37 @@ func (inst *Instance) NewClient(client *Client) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	client := Client{}
+	client.BucketName = bucketName
 	client.s3 = s3.New(s)
-	return client, nil
-}
 
-func (inst *Instance) Run() error {
-	instance = inst
-	return nil
-}
+	for _, option := range options {
+		option(&client)
+	}
 
-func (inst *Instance) GetName() string {
-	return name
-}
-
-func Get() *Instance {
-	return instance
+	return &client, nil
 }
 
 func (c *Client) CreateFolder(key string) (err error) {
 	ctx := context.Background()
-	var cancelFn func()
-	if instance.PutTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.PutTimeout)
+
+	if c.WriteTimeout > 0 {
+		ctx, _ = context.WithTimeout(ctx, c.WriteTimeout)
 	}
-	if cancelFn != nil {
-		defer cancelFn()
-	}
+
 	k := folderName(key)
 	_, err = c.s3.PutObjectWithContext(ctx, &s3.PutObjectInput{Bucket: aws.String(c.BucketName), Key: aws.String(k)})
 	return err
 }
 
-func (c *Client) Download(key string, offset, size int64) (io.ReadCloser, error) {
-	ctx := context.Background()
+func (c *Client) GetObjectByRange(key string, offset, size int64) (io.ReadCloser, error) {
 
-	if instance.DownloadTimeout > 0 {
-		ctx, _ = context.WithTimeout(ctx, instance.DownloadTimeout)
+	ctx := context.Background()
+	if c.DownloadTimeout > 0 {
+		ctx, _ = context.WithTimeout(ctx, c.DownloadTimeout)
 	}
 
-	//k := folderName(key)
 	res, err := c.s3.GetObjectWithContext(ctx, &s3.GetObjectInput{Bucket: aws.String(c.BucketName), Key: aws.String(key), Range: aws.String(helper_http.GenRange(offset, size))})
 	return res.Body, err
 }
@@ -95,13 +85,11 @@ func (c *Client) List(prefix string) ([]*s3.Object, error) {
 	delimiter := "/"
 
 	ctx := context.Background()
-	var cancelFn func()
-	if instance.ReadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+
+	if c.ReadTimeout > 0 {
+		ctx, _ = context.WithTimeout(ctx, c.ReadTimeout)
 	}
-	if cancelFn != nil {
-		defer cancelFn()
-	}
+
 	var objects []*s3.Object
 	err := c.s3.ListObjectsV2PagesWithContext(ctx, &s3.ListObjectsV2Input{Bucket: aws.String(c.BucketName), Prefix: aws.String(prefix), Delimiter: aws.String(delimiter)}, func(page *s3.ListObjectsV2Output, isLastPage bool) bool {
 		for _, folder := range page.CommonPrefixes {
@@ -143,13 +131,11 @@ func (c *Client) List(prefix string) ([]*s3.Object, error) {
 
 func (c *Client) GetObjectAttributes(key string, attributes []*string) (*s3.GetObjectAttributesOutput, error) {
 	ctx := context.Background()
-	var cancelFn func()
-	if instance.ReadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+
+	if c.ReadTimeout > 0 {
+		ctx, _ = context.WithTimeout(ctx, c.ReadTimeout)
 	}
-	if cancelFn != nil {
-		defer cancelFn()
-	}
+
 	output, err := c.s3.GetObjectAttributesWithContext(ctx, &s3.GetObjectAttributesInput{
 		Bucket:           aws.String(c.BucketName),
 		Key:              aws.String(key),
@@ -160,13 +146,11 @@ func (c *Client) GetObjectAttributes(key string, attributes []*string) (*s3.GetO
 
 func (c *Client) HeadObject(key string) (*s3.HeadObjectOutput, error) {
 	ctx := context.Background()
-	var cancelFn func()
-	if instance.ReadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+
+	if c.ReadTimeout > 0 {
+		ctx, _ = context.WithTimeout(ctx, c.ReadTimeout)
 	}
-	if cancelFn != nil {
-		defer cancelFn()
-	}
+
 	return c.s3.HeadObjectWithContext(ctx, &s3.HeadObjectInput{
 		Bucket: aws.String(c.BucketName),
 		Key:    aws.String(key),
@@ -175,21 +159,19 @@ func (c *Client) HeadObject(key string) (*s3.HeadObjectOutput, error) {
 
 func (c *Client) CreateMultipartUpload(key string) (resp *s3.CreateMultipartUploadOutput, err error) {
 	ctx := context.Background()
-	var cancelFn func()
-	if instance.ReadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+
+	if c.ReadTimeout > 0 {
+		ctx, _ = context.WithTimeout(ctx, c.ReadTimeout)
 	}
-	if cancelFn != nil {
-		defer cancelFn()
-	}
+
 	return c.s3.CreateMultipartUploadWithContext(ctx, &s3.CreateMultipartUploadInput{Bucket: aws.String(c.BucketName), Key: aws.String(key)})
 }
 
 func (c *Client) UploadPart(uploadId string, body []byte, key string, partNumber int64) (resp *s3.UploadPartOutput, err error) {
 	ctx := context.Background()
 	var cancelFn func()
-	if instance.ReadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+	if c.ReadTimeout > 0 {
+		ctx, cancelFn = context.WithTimeout(ctx, c.ReadTimeout)
 	}
 	if cancelFn != nil {
 		defer cancelFn()
@@ -206,8 +188,8 @@ func (c *Client) UploadPart(uploadId string, body []byte, key string, partNumber
 func (c *Client) CompletedMultipartUpload(uploadId string, key string, completedParts []*s3.CompletedPart) (resp *s3.CompleteMultipartUploadOutput, err error) {
 	ctx := context.Background()
 	var cancelFn func()
-	if instance.ReadTimeout > 0 {
-		ctx, cancelFn = context.WithTimeout(ctx, instance.ReadTimeout)
+	if c.ReadTimeout > 0 {
+		ctx, cancelFn = context.WithTimeout(ctx, c.ReadTimeout)
 	}
 	if cancelFn != nil {
 		defer cancelFn()

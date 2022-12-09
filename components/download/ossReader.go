@@ -1,18 +1,19 @@
 package download
 
 import (
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"bytes"
+	helper_oss "github.com/langwan/langgo/helpers/oss"
 	"io"
 	"strconv"
 )
 
 type OssReader struct {
 	ObjectName string
-	Bucket     *oss.Bucket
+	Client     *helper_oss.Client
 }
 
 func (o OssReader) GetFileSize() (int64, error) {
-	props, err := o.Bucket.GetObjectDetailedMeta(o.ObjectName)
+	props, err := o.Client.GetObjectDetailedMeta(o.ObjectName)
 	if err != nil {
 		return -1, err
 	}
@@ -24,10 +25,11 @@ func (o OssReader) GetFileSize() (int64, error) {
 	return fileSize, nil
 }
 
-func (o OssReader) OpenRange(offset, size int64) (io.ReadCloser, error) {
-	body, err := o.Bucket.GetObject(o.ObjectName, oss.Range(offset, offset+size-1))
+func (o OssReader) GetObjectByRange(offset, size int64) (io.ReadCloser, error) {
+	body, err := o.Client.GetObjectByRange(o.ObjectName, offset, size)
 	if err != nil {
 		return nil, err
 	}
-	return body, nil
+	reader := bytes.NewReader(body)
+	return io.NopCloser(reader), nil
 }

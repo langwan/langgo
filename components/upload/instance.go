@@ -8,7 +8,7 @@ type Instance struct {
 	upload   *Upload
 }
 
-const name = "ffmpeg"
+const name = "upload"
 
 var instance *Instance
 
@@ -19,6 +19,7 @@ func (i *Instance) Run() error {
 		Workers:  i.Workers,
 		PartSize: partSize,
 	}
+	instance.upload.Init()
 	return nil
 }
 

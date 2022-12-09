@@ -1,8 +1,18 @@
 # Langgo Framework
 
-Langgo是一款go语言开发后端和其它应用的多用途框架。
+Langgo 是 go 语言编写的轻量级框架。
 
-这里可以查看 [全部文档](https://langwan.github.io/langgo)
+## 特性
+* 轻量级框架。
+* 组件和 helper 的合集
+* 支持后端、跨平台应用程序、个人软件开发。
+* 容易与其它框架共存。
+
+这里可以查看 
+
+[中文文档](https://langwan.gitbook.io/langgo-v0.5.x/) 
+
+[English Documents](https://langwan.gitbook.io/langgo-v0.5.x/v/english)
 
 ![](./logo.png)
 

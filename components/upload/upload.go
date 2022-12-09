@@ -45,13 +45,13 @@ type invokeParams struct {
 
 type Writer interface {
 	Create(key string) (string, error)
-	UploadPart(key string, uploadId string, partId int64, data []byte) (string, error)
+	UploadPart(key string, uploadId string, partId int64, partSize int64, data []byte) (string, error)
 	Completed(key string, uploadId string, parts []*Part) error
 }
 
 type Upload struct {
-	Workers  int
-	PartSize int64
+	Workers  int   `yaml:"workers"`
+	PartSize int64 `yaml:"part_size"`
 }
 
 var pool *ants.PoolWithFunc
@@ -62,7 +62,7 @@ func (up *Upload) Init() {
 		buf := make([]byte, params.part.Size)
 		params.srcFile.ReadAt(buf, params.part.Offset)
 		var err error
-		params.part.ETag, err = params.writer.UploadPart(params.dst, params.uploadId, int64(params.part.Id), buf)
+		params.part.ETag, err = params.writer.UploadPart(params.dst, params.uploadId, int64(params.part.Id), params.part.Size, buf)
 		if err != nil {
 			params.failed <- err
 			return
@@ -168,4 +168,8 @@ func genParts(fileSize int64, partSize int64) (parts []*Part, err error) {
 		offset += partSize
 	}
 	return parts, nil
+}
+
+func UploadFile(ctx context.Context, src string, dst string, partList PartList, writer Writer, listener helper_progress.ProgressListener) (err error) {
+	return instance.upload.Upload(ctx, src, dst, partList, writer, listener)
 }

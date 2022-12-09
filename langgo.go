@@ -68,6 +68,13 @@ func GetWorkDir() string {
 	return core.WorkDir
 }
 
+func SetEnvName(p string) {
+	core.EnvName = p
+}
+func GetEnvName() string {
+	return core.EnvName
+}
+
 func SignalHandlers(handler func(sig os.Signal), signals ...os.Signal) {
 	core.SignalHandlers(handler, signals...)
 }

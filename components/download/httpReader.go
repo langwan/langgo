@@ -24,7 +24,7 @@ func (h HttpReader) GetFileSize() (int64, error) {
 	return fileSize, nil
 }
 
-func (h HttpReader) OpenRange(offset, size int64) (io.ReadCloser, error) {
+func (h HttpReader) GetObjectByRange(offset, size int64) (io.ReadCloser, error) {
 	request, err := http.NewRequest("GET", h.Url, nil)
 	if err != nil {
 		return nil, err

@@ -82,7 +82,7 @@ type invokeParams struct {
 
 type FileReader interface {
 	GetFileSize() (int64, error)
-	OpenRange(offset, size int64) (io.ReadCloser, error)
+	GetObjectByRange(offset, size int64) (io.ReadCloser, error)
 }
 
 func (d *Instance) Download(ctx context.Context, dst string, reader FileReader, listener helper_progress.ProgressListener) (err error) {
@@ -278,7 +278,7 @@ func downloadPartToWriter(writer io.WriterAt, params *invokeParams) (int64, erro
 
 	var wn int64 = 0
 
-	body, err := params.reader.OpenRange(params.part.offset, params.part.size)
+	body, err := params.reader.GetObjectByRange(params.part.offset, params.part.size)
 	if err != nil {
 		return 0, err
 	}

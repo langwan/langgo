@@ -35,7 +35,7 @@ import (
 
 func main() {
 	langgo.Run(&hello.Instance{Message: "hello"}})
-	log.Logger("app", "main").Info().Str("hello message", hello.Get().Message).Send()
+    langgo.Logger("app", "main").Info().Str("hello message", hello.Get().Message).Send()
 }
 ```
 ## 版本变迁

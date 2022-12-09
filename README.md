@@ -1,5 +1,8 @@
 # Langgo Framework
 
+[![Run Tests](https://github.com/langwan/langgo/actions/workflows/go.yml/badge.svg)](https://github.com/langwan/langgo/actions/workflows/go.yml)
+![Tag](https://img.shields.io/github/v/tag/langwan/langgo)
+
 Langgo 是 go 语言编写的轻量级框架。
 
 ## 特性

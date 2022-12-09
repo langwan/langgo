@@ -19,7 +19,7 @@ Langgo 是 go 语言编写的轻量级框架。
 
 ![](./logo.png)
 
-所有的实例 [langgo-examples](https://github.com/langwan/langgo-examples)
+所有的实例 [langgo-examples v0.5.x](https://github.com/langwan/langgo-examples/0.5.x)
 
 安装langgo
 

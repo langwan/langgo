@@ -21,18 +21,13 @@ const name = "log"
 
 var instance *Instance
 
-type item struct {
-	logger zerolog.Logger
-	writer helper_reopen.Writer
-}
-
-var loggers = make(map[string]item)
+var loggerWriters = make(map[string]helper_reopen.Writer)
 var lock sync.Mutex
 
 func SetCuttingSignal(sig os.Signal) {
 	core.SignalHandlers(func(sig os.Signal) {
-		for _, it := range loggers {
-			it.writer.Reopen()
+		for _, it := range loggerWriters {
+			it.Reopen()
 		}
 	}, sig)
 }
@@ -54,11 +49,10 @@ func (i *Instance) GetName() string {
 func Logger(name string, tag string) *zerolog.Logger {
 	rp := filepath.Join(core.WorkDir, "logs")
 
-	if _, ok := loggers[name]; !ok {
-		func() {
+	if _, ok := loggerWriters[name]; !ok {
+		func(loggerWriters map[string]helper_reopen.Writer) {
 			lock.Lock()
-			if _, ok = loggers[name]; ok {
-				fmt.Println("name", "exists")
+			if _, ok = loggerWriters[name]; ok {
 				return
 			}
 			defer lock.Unlock()
@@ -68,23 +62,18 @@ func Logger(name string, tag string) *zerolog.Logger {
 			if err != nil {
 				log.Fatalf("%s create %s log file %s : %v", "langgo", name, p, err)
 			}
-			if core.EnvName == core.Development {
-				mf := io.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, rf)
-				l := zerolog.New(mf).With().Str("tag", tag).Timestamp().Logger()
-				loggers[name] = item{
-					logger: l,
-					writer: rf,
-				}
-			} else {
+			loggerWriters[name] = rf
 
-				l := zerolog.New(rf).With().Str("tag", tag).Timestamp().Logger()
-				loggers[name] = item{
-					logger: l,
-					writer: rf,
-				}
-			}
-		}()
+		}(loggerWriters)
 	}
-	it := loggers[name]
-	return &it.logger
+
+	if core.EnvName == core.Development {
+		mf := io.MultiWriter(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, NoColor: false}, loggerWriters[name])
+		l := zerolog.New(mf).With().Str("tag", tag).Timestamp().Caller().Logger()
+		return &l
+	} else {
+		l := zerolog.New(loggerWriters[name]).With().Str("tag", tag).Timestamp().Logger()
+		return &l
+	}
+
 }

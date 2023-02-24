@@ -26,6 +26,8 @@ func Init() {
 		os.Setenv("langgo_worker_dir", core.WorkDir)
 	}
 
+	os.Chdir(core.WorkDir)
+
 	envPath := filepath.Join(core.WorkDir, ".env."+core.EnvName+".yml")
 	confName := "app"
 

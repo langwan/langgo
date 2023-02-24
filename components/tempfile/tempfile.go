@@ -10,6 +10,13 @@ type TempFile struct {
 	Base string `yaml:"base"`
 }
 
+func (tf TempFile) GenFilename(extension string) (string, string) {
+	filename := helper_gen.UuidNoSeparator()
+	tempname := filename + extension
+	p := filepath.Join(tf.Base, tempname)
+	return p, tempname
+}
+
 func (tf TempFile) CreateFile(data []byte, perm os.FileMode) (string, error) {
 	filename := helper_gen.UuidNoSeparator()
 	p := filepath.Join(tf.Base, filename)

@@ -24,6 +24,7 @@ require (
 )
 
 require (
+	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
@@ -73,3 +74,4 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
